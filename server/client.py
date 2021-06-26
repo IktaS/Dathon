@@ -28,10 +28,25 @@ class Client:
     
     def setUsername(self, username):
         self.username = username
+
+    def send(self, message):
+        # sends message through socket, will not encode the message
+    
+    def sendEncode(self, message):
+        # sends message through socket, will not encode the message
+        message = message.encode()
+        self.send(message)
+
+    def start(self):
+        # run self.run in thread, and
+        # self.thread will be used to store the thread
     
     def run(self):
         # socket to receive message
-        self.commandHandler.handle(command)
+        self.commandHandler.handle(self, command)
+    
+    def stop(self):
+        # stop the thread
 
     def __repr__(self):
         return f"socket : {self.socket}\nid: {self.id}\nusername: {self.username}\ncurrentHandler: {self.commandHandler}"
