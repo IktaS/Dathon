@@ -2,11 +2,11 @@ class ClientFactory:
     def __init__(self, IDGenerator):
         self.generator = IDGenerator
     
-    def createClient(self, socket, id = None):
+    def createClient(self, BUFFER_SIZE, socket, addr, id = None):
         clientID = str(id)
         if(id == None):
             clientID = self.generator.newID()
-        return Client(socket, clientID)
+        return Client(BUFFER_SIZE, socket, addr, clientID)
 
 class ClientNumberIDGenerator:
     def __init__(self, init = 0):
@@ -18,10 +18,12 @@ class ClientNumberIDGenerator:
         return retID
 
 class Client:
-    def __init__(self, socket, id):
+    def __init__(self, BUFFER_SIZE, socket, addr, id):
         self.socket = socket
         self.id = id
         self.username = str(self.id)
+        self.BUFFER_SIZE = BUFFER_SIZE
+        self.addr = addr
     
     def setCommandHandler(self, commandHandler):
         self.commandHandler = commandHandler
