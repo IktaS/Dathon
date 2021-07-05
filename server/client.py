@@ -1,3 +1,5 @@
+import threading
+
 class ClientFactory:
     def __init__(self, IDGenerator):
         self.generator = IDGenerator
@@ -24,6 +26,8 @@ class Client:
         self.username = str(self.id)
         self.BUFFER_SIZE = BUFFER_SIZE
         self.addr = addr
+
+        self.closed = False
     
     def setCommandHandler(self, commandHandler):
         self.commandHandler = commandHandler
@@ -32,7 +36,13 @@ class Client:
         self.username = username
 
     def send(self, message):
-        # sends message through socket, will not encode the message
+        if(self.closed):
+            raise Exception("client is closed")
+        try:
+            self.socket.send(message)
+        except:
+            self.socket.close()
+            raise Exception("cannot send message")
     
     def sendEncode(self, message):
         # sends message through socket, will not encode the message
@@ -42,13 +52,27 @@ class Client:
     def start(self):
         # run self.run in thread, and
         # self.thread will be used to store the thread
+        self.thread = threading.Thread(target=self.run)
+        self.thread.start()
     
     def run(self):
-        # socket to receive message
-        self.commandHandler.handle(self, command)
+        while True and not self.closed:
+            try:
+                # socket to receive message
+                command = self.socket.recv(self.BUFFER_SIZE).decode()
+                if command:
+                    self.commandHandler.handle(self, command)
+                else:
+                    self.stop()
+                    return
+            except Exception as e:
+                continue
     
     def stop(self):
         # stop the thread
+        self.socket.close()
+        self.closed = True
+
 
     def __repr__(self):
         return f"socket : {self.socket}\nid: {self.id}\nusername: {self.username}\ncurrentHandler: {self.commandHandler}"

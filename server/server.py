@@ -1,6 +1,8 @@
 import configparser
 import socket
 import sys
+import threading
+from client import *
 
 config = configparser.ConfigParser()
 config.read(".env")
@@ -8,10 +10,10 @@ config.read(".env")
 APP_HOST = config.get("app", "APP_HOST")
 APP_PORT = config.get("app", "APP_PORT")
 
-BUFFER_SIZE = config.get("app", "BUFFER_SIZE")
+BUFFER_SIZE = int(config.get("app", "BUFFER_SIZE"))
 
 class Server:
-    def __init__(self, host, port, logger, clientFactory, listen = 100):
+    def __init__(self, host, port, logger, clientFactory, BUFFER_SIZE, listen = 100):
         super().__init__()
         self.host = host
         self.port = port
@@ -24,6 +26,10 @@ class Server:
         self.socket.listen(listen)
         self.clients = []
         self.handlers = []
+
+        self.BUFFER_SIZE = BUFFER_SIZE
+
+        self.closed = False
     
     def register_client(self, client):
         self.clients.append(client)
@@ -41,18 +47,32 @@ class Server:
     
     def start_server(self):
         # start server thread running run()
+        self.thread = threading.Thread(target=self.run)
+        self.thread.start()
     
     def stop_server(self):
         # stop server thread
+        self.closed = True
+        for client in self.clients:
+            client.stop()
+        self.socket.close()
+
+    def find_client(self, id):
+        for client in self.clients:
+            if client.id == int(id):
+                return client
+        return None
+
     
     def run(self):
-        loggerHandler = LoggerHandler(self.logger)
-        while True:
+        serverHandler = Server.ServerHandler(self, self.logger)
+        while True and not self.closed:
             sock, addr = self.socket.accept()
             client = self.make_client(sock, addr)
             self.log_message("client " + str(client) + " connected")
-            client.setCommandHandler(loggerHandler)
+            client.setCommandHandler(serverHandler)
             client.start()
+            client.sendEncode(str(client.id))
             self.register_client(client)
 
     class LoggerHandler:
@@ -61,3 +81,53 @@ class Server:
         
         def handle(self, client, message):
             print("client " + str(client) + " said " + str(message), file=self.logger)
+    
+    class ServerHandler:
+        def __init__(self, server, logger):
+            self.logger = logger
+            self.server = server
+        
+        def handle(self, client, command):
+            print("client " + str(client) + " said " + str(command), file=self.logger)
+            params = command.split("|")
+            if params[0] == "username":
+                if params[1]:
+                    if params[1] == "update":
+                        if params[2] and params[2] != "":
+                            client.setUsername(params[2])
+                            client.sendEncode("username|update|OK")
+                        else:
+                            client.sendEncode("username|update|FAIL")
+                    elif params[1] == "check":
+                        if params[2] and params[2] != "":
+                            c = self.server.find_client(params[2])
+                            if c == None:
+                                print("Could not find client id " + params[2], file=self.logger)
+                                client.sendEncode("username|check|")
+                            else:
+                                client.sendEncode("username|check|" + c.username)
+                        else:
+                            client.sendEncode("username|check|")
+                else:
+                    client.sendEncode("username|FAIL")
+            elif params[0] == "scoreboard":
+                print("scoreboard")
+                #TODO: implement scoreboard command
+            elif params[0] == "private":
+                print("private")
+                #TODO: implement private command
+            elif params[0] == "matchmake":
+                print("matchmake")
+                #TODO: implement matchmake command
+
+
+
+factory = ClientFactory(ClientNumberIDGenerator())
+
+s = Server('localhost', 8081, sys.stdout, factory, BUFFER_SIZE)
+
+try:
+    s.start_server()
+except KeyboardInterrupt:
+    s.stop_server()
+    sys.exit(0)

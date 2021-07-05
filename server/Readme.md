@@ -14,26 +14,41 @@ Now Client will be able to send available [commands](#commands)
 ---
 A client can assign a username to their ID, by default their username is their `id`
 ```bash
-username|{username}
+username|update|{username}
 ```
 
 Server will send back
 ```bash
-username|OK
+username|update|OK
 ```
 on accepted request
 
 ```bash
-username|FAIL
+username|update|FAIL
 ```
 
 on failed request
 
+A client can also check username for a client ID
+```bash
+username|check|{client-id}
+```
+
+Server will send back
+```bash
+username|check|{username}
+```
+on success request  
+and empty string 
+```bash
+username|check|
+```
+on invalid client id request
 ### Getting Scoreboard
 ---
 To get scoreboard data from server, a client can send
 ```bash
-scoreboard|{username}
+scoreboard
 ```
 
 Server will send back a json object
@@ -144,3 +159,13 @@ When a match has been found and ready to be made,
 matchmake|{queue-id}|start
 ```
 will be broadcasted to all involved client. Indicating that their match is about to start
+
+To exit a matchmaking queue, client can send
+```bash
+matchmake|exit
+```
+
+server will return
+```bash
+matchmake|exit|OK
+```
