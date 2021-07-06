@@ -3,6 +3,8 @@ import select
 import sys
 from threading import Thread
 
+import command
+
 BUFFER_SIZE = 2048
 
 
@@ -19,15 +21,16 @@ class Server:
         Thread(target=self.recv_thread, args=()).start()
 
     def send_thread(self):
-        input_command = Input_Command()
+        self.input_command = Input_Command()
         while True:
             data = input_command.get()
-            self.sock.send(data.encode())
+            self.sock.send( data.encode() )
 
     def recv_thread(self):
+        self.server_command = Server_Command()
         while True:
-            data = self.sock.recv(BUFFER_SIZE).decode()
-            print(data)
+            data = self.sock.recv(BUFFER_SIZE)
+            server_command( data.decode() )
             
 
 try:
