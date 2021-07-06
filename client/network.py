@@ -3,7 +3,7 @@ import select
 import sys
 from threading import Thread
 
-import command
+from command import *
 
 BUFFER_SIZE = 2048
 
@@ -12,7 +12,7 @@ class Server:
     def __init__(self, ip_address, port):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((ip_address, port))
-        self.id = sock.recv(BUFFER_SIZE).decode()
+        self.id = self.sock.recv(BUFFER_SIZE).decode()
 
         self.connect()
 
@@ -21,16 +21,16 @@ class Server:
         Thread(target=self.recv_thread, args=()).start()
 
     def send_thread(self):
-        self.input_command = Input_Command()
+        self.input_command = Input_Command(self.id)
         while True:
-            data = input_command.get()
+            data = self.input_command.get()
             self.sock.send( data.encode() )
 
     def recv_thread(self):
         self.server_command = Server_Command()
         while True:
             data = self.sock.recv(BUFFER_SIZE)
-            server_command( data.decode() )
+            self.server_command.set( data.decode() )
             
 
 try:
