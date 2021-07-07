@@ -127,3 +127,47 @@ class PopUpMenu():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.hovered:
                 print("pop")
+class InputBox:
+    def __init__(self,screen,font, x, y, w, h,color,active_color, text=''):
+        self.font=font
+        self.screen=screen
+        self.color_inactive = color
+        self.color_active = active_color
+        self.color=self.color_inactive
+        self.text = text
+        self.text_limit=15
+        self.display = text[-self.text_limit:]
+        self.txt_surface = self.font.render(self.display, True, self.color)
+        self.rect=self.txt_surface.get_rect(width=w,height=h,x=x,y=y)
+        self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+        # self.rect = pygame.Rect(x, y, w, h)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+            self.color = self.color if self.color_active else self.color_inactive
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                print("hi")
+                if event.key == pygame.K_RETURN:
+                    print(self.text)
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                    self.display = self.text[-self.text_limit:]
+                else:
+                    self.text += event.unicode
+                    self.display = self.text[-self.text_limit:]
+                self.txt_surface = self.font.render(self.display, True, self.color)       
+                self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+                self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+
+    def update(self):
+        self.display = self.text[-self.text_limit:]
+    
+    def draw(self):
+        self.screen.blit(self.txt_surface, self.text_rect)
+        pygame.draw.rect(self.screen, self.color, self.rect, 2,20)

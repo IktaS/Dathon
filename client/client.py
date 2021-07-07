@@ -7,16 +7,17 @@ from menu import Button
 from menu import TextStatic
 from menu import TextButton
 from menu import PopUpMenu
+from menu import InputBox
 from game_constant import *
 
+pygame.init()
+title="Dathon"
+screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
+pygame.display.set_caption(title)
+clock = pygame.time.Clock()
 
 
 def main():
-    pygame.init()
-    title="Dathon"
-    screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
-    pygame.display.set_caption(title)
-    clock = pygame.time.Clock()
     screen.fill(CLR_Parchment)
     # screen.fill(CLR_BG_MENU)
     
@@ -30,7 +31,7 @@ def main():
     btn_cgame = Button(screen,menu_font,menu[0],CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,585,MENU_BTN_BORDER,MENU_BTN_EDGE,pu_cgame)
     btn_jgame = Button(screen,menu_font,menu[1],CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,726,MENU_BTN_BORDER,MENU_BTN_EDGE,pu_jgame)
     text_htp = TextButton(screen,menu_font,menu[2],CLR_Tan,600,867,CLR_Paarl)
-    
+    input_box1 = InputBox(screen,menu_font,470,370,500, 100, CLR_Black,CLR_White,"")
     is_running=True
     
     while is_running:
@@ -41,14 +42,16 @@ def main():
             btn_cgame.event_handler(event)
             btn_jgame.event_handler(event)
             text_htp.event_handler(event)
+            input_box1.handle_event(event)
         pygame.draw.line(screen,CLR_TTL,(570,254),(874,254),1)   
+        input_box1.draw()
+        input_box1.update()
         btn_cgame.update()
         btn_jgame.update()  
         text_htp.update()
         text_title.update()
         pygame.display.flip()
         clock.tick()
-        # print(screen.get)
     pygame.quit()
 
 if __name__ == '__main__':
