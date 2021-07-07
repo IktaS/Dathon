@@ -2,7 +2,7 @@ import sys
 import pygame
 import os
 class Button():
-    def __init__(self, screen,font,text,text_def_color,text_act_color,bg_def_color,bg_act_color,rect_w,rect_h,rect_x,rect_y,border,edge):
+    def __init__(self, screen,font,text,text_def_color,text_act_color,bg_def_color,bg_act_color,rect_w,rect_h,rect_x,rect_y,border,edge,popup):
         self.font = font
         self.text = text
         self.def_text_color = text_def_color
@@ -24,6 +24,9 @@ class Button():
         self.rect=self.bg_default_rect
         self.screen=screen
         self.hovered= False
+        self.popupObj= popup
+        self.state=False
+
         
     def update(self):
         # print(self.border,self.edge)
@@ -35,12 +38,25 @@ class Button():
             self.rect=self.bg_default_rect
             pygame.draw.rect(self.screen, self.def_bg_color, self.bg_default_rect,self.border,self.edge)
             self.screen.blit(self.default_surface, self.text_default_rect)
+        if self.state:
+            self.popupObj.update()
     def event_handler(self,event):
+        self.popupObj.event_handler(event)
         if event.type == pygame.MOUSEMOTION:
             self.hovered= self.rect.collidepoint(event.pos)
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # self.state=False
+        if event.type == pygame.MOUSEBUTTONDOWN:
             if self.hovered:
+                self.state=True
                 print(self.text)
+        if event.type == pygame.KEYDOWN:
+            if event.key==pygame.K_RETURN:
+                self.state=False
+                print(self.text)
+            if event.key==pygame.K_ESCAPE:
+                self.state=False
+                print(self.text)
+        
                 
 class TextStatic():
     def __init__(self,screen,font,text_content,text_color,x,y):
@@ -58,20 +74,56 @@ class TextStatic():
         self.screen.blit(self.surface, (self.x,self.y))
 
 class TextButton():
-    def __init__(self,screen,font,text_content,text_color,x,y):
+    def __init__(self,screen,font,text_content,text_color,x,y,active_color):
         self.font=font
         self.screen=screen
-        self.text=text_content
-        self.color=text_color
+        self.text= text_content
+        self.color= text_color
+        self.active_color = active_color
         self.x=x
         self.y=y
         self.surface=self.font.render(self.text, True, self.color)
         self.rect=self.surface.get_rect(x=self.x,y=self.y)
+        self.hovered= False
     # Text
     def update(self):
+        if self.hovered:
+            self.surface=self.font.render(self.text, True, self.active_color)
+        else:
+            self.surface=self.font.render(self.text, True, self.color)
         self.screen.blit(self.surface, (self.x,self.y))
     def event_handler(self,event):
+        if event.type == pygame.MOUSEMOTION:
+            self.hovered= self.rect.collidepoint(event.pos)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
+            if self.hovered:
                 print(self.text)
+
+class PopUpMenu():
+    def __init__(self, screen):
+        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
+        self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
+        self.screen=screen
+        self.sf_text1=self.font.render("This is your code", True, (0,0,0))
+        self.sf_text2=self.font_code.render("ABCDEF", True, (255,255,255))
+        self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
         
+        self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
+        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
+        self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
+        self.sf_text3_rect = self.sf_text3.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+259)
+        self.hovered= False
+        
+        
+    def update(self):
+        pygame.draw.rect(self.screen, (207, 166, 124,255), self.bg_rect, 0,20)
+        self.screen.blit(self.sf_text1, self.sf_text1_rect)
+        self.screen.blit(self.sf_text2, self.sf_text2_rect)
+        self.screen.blit(self.sf_text3, self.sf_text3_rect)
+        
+    def event_handler(self,event):
+        if event.type == pygame.MOUSEMOTION:
+            self.hovered= self.bg_rect.collidepoint(event.pos)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.hovered:
+                print("pop")

@@ -18,6 +18,7 @@ CLR_SpicyMix = (148, 91, 69)
 CLR_KenyanCopper = (109, 31, 9)
 CLR_Stonewall = (149, 137, 123)
 CLR_Black = (0,0,0)
+CLR_White = (255,255,255)
 
 
 # MENU
