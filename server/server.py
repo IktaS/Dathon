@@ -3,6 +3,7 @@ import socket
 import sys
 import threading
 from client import *
+from room import *
 
 config = configparser.ConfigParser()
 config.read(".env")
@@ -116,15 +117,36 @@ class Server:
             elif params[0] == "private":
                 print("private")
                 #TODO: implement private command
+                # this is for demo only delete afterwards
+                if params[1]:
+                    print(params[1])
+                    if params[1] == "make":
+                        self.room_factory = RoomFactory()
+                        self.room = self.room_factory.create_room(client)
+                        print("created room with id", self.room.id)
+                        client.sendEncode("private|" + self.room.room_code)
+
+                    elif params[1] == "join":
+                        if params[2]:
+                            if params[2] == self.room.room_code:
+                                self.room.add_client(client)
+                            else:
+                                client.sendEncode("room|failed")
+
             elif params[0] == "matchmake":
                 print("matchmake")
                 #TODO: implement matchmake command
+
+            # this is for demo only delete afterwards
+            elif params[0] == "room" and self.room.check_client(client):
+                if params[1] == "chat":
+                    self.room.chat(params[2], client)
 
 
 
 factory = ClientFactory(ClientNumberIDGenerator())
 
-s = Server('localhost', 8081, sys.stdout, factory, BUFFER_SIZE)
+s = Server('localhost', 8081, sys.stdout, factory, 2048)
 
 try:
     s.start_server()
