@@ -1,10 +1,15 @@
+import configparser
 import socket
 import select
 import sys
 from threading import Thread
-
 from command import *
 
+# config = configparser.ConfigParser()
+# config.read(".env")
+
+# APP_HOST = config.get("app", "APP_HOST")
+# APP_PORT = int(config.get("app", "APP_PORT"))
 BUFFER_SIZE = 2048
 
 
@@ -34,9 +39,7 @@ class Server:
             
 
 try:
-    ip_address = '127.0.0.1'
-    port = 8081
-    
-    server = Server(ip_address, port)
+    # server = Server(APP_HOST, APP_PORT)
+    server = Server('localhost', 8081)
 except KeyboardInterrupt:
     sys.exit(0)

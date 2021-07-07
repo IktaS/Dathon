@@ -51,18 +51,42 @@ class Room:
             while biji:
                 self.board[client][i] += 1
                 biji -= 1
+                if biji == 0:
+                    if self.board[client][i] > 1:
+                        biji = self.board[client][i]
+                        self.board[client][i] = 0
+                    else:
+                        self.board[other_client][7] = self.board[client][6-i]
+                        self.board[client][6-i] = 0
                 i += 1
                 if i == 8:
                     break
+
             i = 0
             while biji:
                 self.board[other_client][i] += 1
                 biji -= 1
+                if biji == 0:
+                    if self.board[other_client][i] > 1:
+                        biji = self.board[other_client][i]
+                        self.board[client][i] = 0                        
                 i += 1
                 if i == 7:
-                    break
+                    break 
 
-        self.current_player = other_client
+        if ( self.check_endgame()):
+            return
+            # Do something
+        else:
+            self.checkturn(other_client)
+
+    def checkturn(self, other_client):
+        biji = 0
+        for i in range(7) :
+            biji += self.board[other_client][i]
+        if biji > 0:
+            self.current_player(other_client)
+
 
     def chat(self, message, client):
         print('room|chat|' + client.username + '|' + message, client)
@@ -80,6 +104,9 @@ class Room:
 
         if biji == 98:
             self.endgame()
+            return True
+        else:
+            return False
 
     def endgame(self):
         if self.board[ self.clients[0] ][7] > self.board[ self.clients[1] ][7]:
