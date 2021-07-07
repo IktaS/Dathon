@@ -10,7 +10,7 @@ class Input_Command:
         self.matchmaking_exit = "matchmake|exit"
         self.game_exit = "exit"
         self.scoreboard = "scoreboard"
-        self.chat = "chat"
+        self.chat = "room|chat|"
 
     def get(self):
         #TODO: change to input from ui
@@ -21,9 +21,9 @@ class Input_Command:
             return self.username_update + params[1]
         elif params[0] == "check":
             return self.username_check + self.id
-        elif params[0] == "create_private":
+        elif params[0] == "create":
             return self.private_create
-        elif params[0] == "join_private":
+        elif params[0] == "join":
             return self.private_join + params[1]
         elif params[0] == "join_matchmaking":
             return self.matchmaking_join
@@ -34,7 +34,7 @@ class Input_Command:
         elif params[0] == "scoreboard":
             return self.scoreboard
         elif params[0] == "chat":
-            return 'room|' + params[1]
+            return self.chat + params[1]
         else:
             return ""
 
@@ -58,7 +58,5 @@ class Server_Command:
                         print("id not found")
             else:
                 print("invalid request")
-        elif params[0] == "chat":
-            print("server >> " + params[1])
         else:
-                print("invalid request")
+            print(cmd)
