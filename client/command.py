@@ -10,28 +10,31 @@ class Input_Command:
         self.matchmaking_exit = "matchmake|exit"
         self.game_exit = "exit"
         self.scoreboard = "scoreboard"
+        self.chat = "chat"
 
     def get(self):
         #TODO: change to input from ui
         cmd = input()
-        command = cmd.split(" ")
+        params = cmd.split("|")
 
-        if command[0] == "update":
-            return self.username_update + command[1]
-        elif command[0] == "check":
+        if params[0] == "update":
+            return self.username_update + params[1]
+        elif params[0] == "check":
             return self.username_check + self.id
-        elif command[0] == "create_private":
+        elif params[0] == "create_private":
             return self.private_create
-        elif command[0] == "join_private":
-            return self.private_join + command[1]
-        elif command[0] == "join_matchmaking":
+        elif params[0] == "join_private":
+            return self.private_join + params[1]
+        elif params[0] == "join_matchmaking":
             return self.matchmaking_join
-        elif command[0] == "exit_matchmaking":
+        elif params[0] == "exit_matchmaking":
             return self.matchmaking_exit
-        elif command[0] == "exit":
+        elif params[0] == "exit":
             return self.game_exit
-        elif command[0] == "scoreboard":
+        elif params[0] == "scoreboard":
             return self.scoreboard
+        elif params[0] == "chat":
+            return 'room|' + params[1]
         else:
             return ""
 
@@ -39,21 +42,23 @@ class Server_Command:
 
     def set(self, cmd):
         #TODO: change to do something
-        command = cmd.split("|")
+        params = cmd.split("|")
 
-        if command[0] == "username":
-            if command[1]:
-                if command[1] == "update":
-                    if command[2] == "OK":
+        if params[0] == "username":
+            if params[1]:
+                if params[1] == "update":
+                    if params[2] == "OK":
                         print("username has been changed")
                     else:
                         print("failed to change username")
-                elif command[1] == "check":
-                    if command[2] and command[2] != "":
-                        print("your username is " + command[2])
+                elif params[1] == "check":
+                    if params[2] and params[2] != "":
+                        print("your username is " + params[2])
                     else:
                         print("id not found")
             else:
                 print("invalid request")
+        elif params[0] == "chat":
+            print("server >> " + params[1])
         else:
                 print("invalid request")
