@@ -4,21 +4,22 @@ import random
 from clients import *
 from server import *
 
+
 class Match:
-    def __init__(server, player1, player2):
+    def __init__(self, server, player1, player2):
         self.server = server
         self.player1 = player1
         self.player2 = player2
 
         self.board = {
-            self.player1 : [7, 7, 7, 7, 7, 7, 7, 0] ,
-            self.player2 : [7, 7, 7, 7, 7, 7, 7, 0]
+            self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
+            self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
         }
 
         self.broadcast('match|start')
         self.first_move()
 
-        matchHandler = MatchHandler(self)
+        self.matchHandler = MatchHandler(self)
 
     def first_move(self):
         if bool(random.getrandbits(1)):
@@ -39,7 +40,6 @@ class Match:
 
         biji = self.board[client][i]
         self.board[client][i] = 0
-
 
         while biji:
             while biji:
@@ -81,8 +81,10 @@ class Match:
             self.server.saveScore(score, username)
             self.server.saveScore(score, username)
 
-            self.server.saveScore( self.board[player1][7], self.player1.username)
-            self.server.saveScore( self.board[player2][7], self.player2.username)
+            self.server.saveScore(
+                self.board[player1][7], self.player1.username)
+            self.server.saveScore(
+                self.board[player2][7], self.player2.username)
         else:
             self.checkturn(other_client)
 
@@ -91,7 +93,7 @@ class Match:
             if self.board[client][i] > 0:
                 self.current_player = client
                 return
-    
+
     def getOther_client(self, client):
         if client == self.player1:
             return self.player2
@@ -129,7 +131,6 @@ class Match:
             self.player1.sendEncode('chat|' + client.username + '|' + message)
 
 
-
 class MatchHandler:
     def __init__(self, match):
         self.match = match
@@ -140,8 +141,7 @@ class MatchHandler:
 
         if params[0] == 'match':
             if params[1] == 'move':
-                self.match.move( client, int(params[2]) )
+                self.match.move(client, int(params[2]))
 
         elif params[0] == 'chat':
             self.match.chat(command, params[1])
-
