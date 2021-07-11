@@ -17,6 +17,7 @@ class SeedHole():
         self.image_sedikit = pygame.transform.scale(pygame.image.load('assets/BijiSedikit.png'),self.image_size)
         self.image_sedang= pygame.transform.scale(pygame.image.load('assets/BijiSedang2.png'),self.image_size)
         self.image_banyak= pygame.transform.scale(pygame.image.load('assets/BijiBanyak.png'),self.image_size)
+        self.image_kosong= pygame.transform.scale(pygame.image.load('assets/BijiKosong.png'),self.image_size)
         self.image = self.image_sedang
         self.x=x
         self.y=y
@@ -28,10 +29,12 @@ class SeedHole():
     def update(self):
         if self.value>7:
             self.image=self.image_banyak
-        elif self.value <=7 and self.value > 3:
+        elif self.value > 3:
             self.image=self.image_sedang
         elif self.value <=3 and self.value > 0:
             self.image=self.image_sedikit
+        elif self.value ==0:
+            self.image=self.image_kosong
         if self.hovered:
             self.inner_colour= self.hover_color
         else:

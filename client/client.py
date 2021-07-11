@@ -3,6 +3,7 @@ import sys
 import pygame
 import os
 import array as arr
+from threading import Thread
 from menu import Button
 from menu import TextStatic
 from menu import TextButton
@@ -50,8 +51,8 @@ def game():
         # enemyScoreHole
     ]
     scoreBox=[
-        ScoreBox(screen,0,1215,64,10),
         ScoreBox(screen,0,42,927,10),
+        ScoreBox(screen,0,1215,64,10),
     ]
     playerBox=[
         ValueBox(screen,806,620),
@@ -84,7 +85,9 @@ def game():
             for i in range(7):
                 playerHole[i].event_handler(event)
                 if event.type == pygame.MOUSEBUTTONDOWN and playerHole[i].hovered:
+                    # Thread(target=match.move(), args=(i)).start()
                     match.move(i)
+                    print("Jalan Gan")
 
         
         for hole in playerHole:
@@ -111,7 +114,7 @@ def game():
         for hole in enemyBox:
             hole.draw()
         pygame.display.flip()
-        clock.tick(0)
+        clock.tick(1000)
     pygame.quit()
 
 def waiting():
