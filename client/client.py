@@ -12,6 +12,7 @@ from game import SeedHole
 from game import ValueBox
 from game import ScoreBox
 from game_constant import *
+from match import *
 
 pygame.init()
 title="Dathon"
@@ -49,8 +50,8 @@ def game():
         # enemyScoreHole
     ]
     scoreBox=[
-        ScoreBox(screen,str(0),1215,64,10),
-        ScoreBox(screen,str(0),42,927,10),
+        ScoreBox(screen,0,1215,64,10),
+        ScoreBox(screen,0,42,927,10),
     ]
     playerBox=[
         ValueBox(screen,806,620),
@@ -70,6 +71,7 @@ def game():
         ValueBox(screen,316,198),
         ValueBox(screen,218,198),
     ]
+    match = Match(playerHole, playerBox, enemyHole, enemyBox, playerScoreHole, enemyScoreHole, scoreBox)
     
     
     
@@ -79,13 +81,11 @@ def game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_running=False
-            for hole in playerHole:
-                hole.event_handler(event)
-        for i in range(7):
-            playerBox[i].value=playerHole[i].value
-            enemyBox[i].value=enemyHole[i].value
-        playerScoreHole.update()
-        enemyScoreHole.update()
+            for i in range(7):
+                playerHole[i].event_handler(event)
+                if event.type == pygame.MOUSEBUTTONDOWN and playerHole[i].hovered:
+                    match.move(i)
+
         
         for hole in playerHole:
             hole.update()
@@ -111,7 +111,7 @@ def game():
         for hole in enemyBox:
             hole.draw()
         pygame.display.flip()
-        clock.tick()
+        clock.tick(0)
     pygame.quit()
 
 def waiting():

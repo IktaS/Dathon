@@ -54,8 +54,8 @@ class SeedHole():
     def event_handler(self,event):
         if event.type == pygame.MOUSEMOTION:
             self.hovered= self.iscollide(event.pos)
-        if event.type == pygame.MOUSEBUTTONDOWN and self.hovered:
-            self.value+=1
+        # if event.type == pygame.MOUSEBUTTONDOWN and self.hovered:
+        #     self.value+=1
 
 
 # class ValueHole():
@@ -126,8 +126,8 @@ class ValueBox():
         self.inner_colour= self.normal_color
         self.screen=screen
         self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),40)
-        self.value=str(7)
-        self.textImage=self.font.render(self.value, True, self.border_colour)
+        self.value=7
+        self.textImage=self.font.render(str(self.value), True, self.border_colour)
         self.image = self.textImage
         self.outer_x=x
         self.outer_y=y
@@ -169,7 +169,7 @@ class ScoreBox():
         self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),33)
         self.value=value
         # self.textImage=
-        self.image = self.font.render(self.value, True, self.border_colour)
+        self.image = self.font.render(str(self.value), True, self.border_colour)
         self.outer_x=x
         self.outer_y=y
         self.outer_rect=self.image.get_rect(x=self.outer_x,y=self.outer_y,width=self.outer_w,height=self.outer_h)
@@ -177,7 +177,7 @@ class ScoreBox():
         self.text_rect = self.image.get_rect(center=self.outer_rect.center)
         self.hovered=False
     def update(self):
-        self.image=self.font.render(self.value, True, self.border_colour)
+        self.image=self.font.render(str(self.value), True, self.border_colour)
     def draw(self):
         pygame.draw.rect(self.screen, self.normal_color, self.outer_rect,self.outer_border_width,self.edge)
         self.screen.blit(self.image,self.text_rect)
