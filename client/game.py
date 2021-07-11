@@ -3,7 +3,7 @@ import math
 import os
 from game_constant import *
 class SeedHole():
-    def __init__(self, screen,value,radius,x,y):
+    def __init__(self, screen,radius,x,y,value=7):
         self.border_colour = CLR_Black
         self.outer_circle_radius = radius
         self.outer_border_width = 3
@@ -54,6 +54,8 @@ class SeedHole():
     def event_handler(self,event):
         if event.type == pygame.MOUSEMOTION:
             self.hovered= self.iscollide(event.pos)
+        if event.type == pygame.MOUSEBUTTONDOWN and self.hovered:
+            self.value+=1
 
 
 # class ValueHole():
@@ -112,7 +114,7 @@ class SeedHole():
 #             self.hovered= self.iscollide(event.pos)
             
 class ValueBox():
-    def __init__(self, screen,value,x,y):
+    def __init__(self, screen,x,y):
         self.border_colour = CLR_Black
         self.outer_h = 60
         self.outer_w = 80
@@ -124,7 +126,7 @@ class ValueBox():
         self.inner_colour= self.normal_color
         self.screen=screen
         self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),40)
-        self.value=str(value)
+        self.value=str(7)
         self.textImage=self.font.render(self.value, True, self.border_colour)
         self.image = self.textImage
         self.outer_x=x
@@ -137,10 +139,13 @@ class ValueBox():
         self.hovered=False
         
     def update(self):
-        if self.hovered:
-            self.inner_colour= self.hover_color
-        else:
-            self.inner_colour= self.normal_color
+        self.textImage=self.font.render(str(self.value), True, self.border_colour)
+        self.image = self.textImage
+        
+        # if self.hovered:
+        #     self.inner_colour= self.hover_color
+        # else:
+        #     self.inner_colour= self.normal_color
     def draw(self):
         pygame.draw.rect(self.screen, self.border_colour, self.outer_rect,self.outer_border_width)
         pygame.draw.rect(self.screen, self.inner_colour, self.inner_rect,self.inner_border_width)

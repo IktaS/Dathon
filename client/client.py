@@ -26,26 +26,26 @@ def game():
     board= pygame.image.load('assets/DakonBoard.png').convert_alpha()
     board_pos=(42,290)
     
-    playerScoreHole=SeedHole(screen,15,50,95,410)
-    enemyScoreHole=SeedHole(screen,15,50,925,410)
+    playerScoreHole=SeedHole(screen,50,95,410,0)
+    enemyScoreHole=SeedHole(screen,50,925,410,0)
     playerHole=[
-        SeedHole(screen,15,40,806,475),
-        SeedHole(screen,7,40,708,475),
-        SeedHole(screen,7,40,610,475),
-        SeedHole(screen,7,40,512,475),
-        SeedHole(screen,7,40,414,475),
-        SeedHole(screen,7,40,316,475),
-        SeedHole(screen,7,40,218,475),
+        SeedHole(screen,40,806,475),
+        SeedHole(screen,40,708,475),
+        SeedHole(screen,40,610,475),
+        SeedHole(screen,40,512,475),
+        SeedHole(screen,40,414,475),
+        SeedHole(screen,40,316,475),
+        SeedHole(screen,40,218,475),
         # playerScoreHole
     ]
     enemyHole=[
-        SeedHole(screen,7,40,218,343),
-        SeedHole(screen,7,40,316,343),
-        SeedHole(screen,7,40,414,343),
-        SeedHole(screen,7,40,512,343),
-        SeedHole(screen,7,40,610,343),
-        SeedHole(screen,7,40,708,343),
-        SeedHole(screen,7,40,806,343),
+        SeedHole(screen,40,218,343),
+        SeedHole(screen,40,316,343),
+        SeedHole(screen,40,414,343),
+        SeedHole(screen,40,512,343),
+        SeedHole(screen,40,610,343),
+        SeedHole(screen,40,708,343),
+        SeedHole(screen,40,806,343),
         # enemyScoreHole
     ]
     scoreBox=[
@@ -53,22 +53,22 @@ def game():
         ScoreBox(screen,str(0),42,927,10),
     ]
     playerBox=[
-        ValueBox(screen,7,806,620),
-        ValueBox(screen,7,708,620),
-        ValueBox(screen,7,610,620),
-        ValueBox(screen,7,512,620),
-        ValueBox(screen,7,414,620),
-        ValueBox(screen,7,316,620),
-        ValueBox(screen,7,218,620),
+        ValueBox(screen,806,620),
+        ValueBox(screen,708,620),
+        ValueBox(screen,610,620),
+        ValueBox(screen,512,620),
+        ValueBox(screen,414,620),
+        ValueBox(screen,316,620),
+        ValueBox(screen,218,620),
     ]
     enemyBox=[
-        ValueBox(screen,7,806,198),
-        ValueBox(screen,7,708,198),
-        ValueBox(screen,7,610,198),
-        ValueBox(screen,7,512,198),
-        ValueBox(screen,7,414,198),
-        ValueBox(screen,7,316,198),
-        ValueBox(screen,7,218,198),
+        ValueBox(screen,806,198),
+        ValueBox(screen,708,198),
+        ValueBox(screen,610,198),
+        ValueBox(screen,512,198),
+        ValueBox(screen,414,198),
+        ValueBox(screen,316,198),
+        ValueBox(screen,218,198),
     ]
     
     
@@ -81,14 +81,17 @@ def game():
                 is_running=False
             for hole in playerHole:
                 hole.event_handler(event)
+        for i in range(7):
+            playerBox[i].value=playerHole[i].value
+            enemyBox[i].value=enemyHole[i].value
         playerScoreHole.update()
         enemyScoreHole.update()
+        
         for hole in playerHole:
             hole.update()
         for hole in enemyHole:
             hole.update()
         for box in scoreBox:
-            # box.value=str(10)
             box.update()
         for hole in playerBox:
             hole.update()
@@ -98,6 +101,7 @@ def game():
         enemyScoreHole.draw()
         for hole in playerHole:
             hole.draw()
+            
         for hole in enemyHole:
             hole.draw()
         for box in scoreBox:
