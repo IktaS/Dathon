@@ -1,9 +1,11 @@
 import configparser
+from typing import Match
 from clients import Client, ClientFactory, ClientNumberIDGenerator
 from room import UIDGenerator, Room, RoomFactory
 import socket
 import sys
 import threading
+import queue
 
 config = configparser.ConfigParser()
 config.read(".env")
@@ -31,6 +33,8 @@ class Server:
         self.socket.listen(listen)
         self.clients = []
         self.handlers = []
+
+        self.queue = queue.Queue()
 
         self.BUFFER_SIZE = BUFFER_SIZE
 
@@ -79,7 +83,7 @@ class Server:
             client.sendEncode(str(client.id))
             self.register_client(client)
 
-    def saveScore(score, username):
+    def saveScore(self, score, username):
         pass
 
     class LoggerHandler:
@@ -128,12 +132,14 @@ class Server:
             elif params[0] == "private":
                 if params[1]:
                     if params[1] == "make":
-                        room = self.server.roomFactory.newRoom(client)
+                        room = self.server.roomFactory.newRoom(
+                            self.server, client
+                        )
                         self.server.rooms[room.id] = room
                         client.sendEncode("private|" + room.id)
                     elif params[1] == "join":
                         if params[2]:
-                            if params[2] in self.server.rooms:
+                            if params[2] in self.server.rooms and not self.server.rooms[params[2]].locked:
                                 self.server.rooms[params[2]].addClient(client)
                             else:
                                 client.sendEncode("private|failed")
@@ -141,6 +147,11 @@ class Server:
             elif params[0] == "matchmake":
                 print("matchmake")
                 # TODO: implement matchmake command
+                self.server.queue.put(client)
+                if self.server.queue.qsize() == 2:
+                    c1 = self.server.queue.get()
+                    c2 = self.server.queue.get()
+                    match = Match(self.server, c1, c2)
 
 
 clientFactory = ClientFactory(ClientNumberIDGenerator())

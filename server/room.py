@@ -1,7 +1,7 @@
 import json
 import random
 from clients import Client
-from typing import List
+from typing import List, Match
 import string
 
 
@@ -17,17 +17,19 @@ class RoomFactory:
     def __init__(self, IDGenerator: UIDGenerator) -> None:
         self.id_generator = IDGenerator
 
-    def newRoom(self, master: Client = None):
-        return Room(self.id_generator.newID(), master)
+    def newRoom(self, server, master: Client = None):
+        return Room(server, self.id_generator.newID(), master)
 
 
 class Room:
-    def __init__(self, id, master: Client = None) -> None:
+    def __init__(self, server, id, master: Client = None) -> None:
+        self.server = server
         self.id = id
         self.master: Client = master
         self.clients: List[Client] = []
         self.previousHandlers = {}
         self.handler = RoomCommandHandler(self)
+        self.locked = False
 
         if self.master is not None:
             self.clients.append(master)
@@ -77,7 +79,9 @@ class Room:
     def startMatch(self, caller: Client) -> bool:
         if caller is not self.master:
             return False
+        self.locked = True
         # TODO: implement match
+        match = Match(self.server, self.master, self.clients[0])
 
     def broadcastMessageEncode(self, message: str, exception: Client = None):
         if not len(self.clients):
