@@ -1,10 +1,7 @@
 import configparser
 
 config = configparser.ConfigParser()
-config.read("env")
-
-APP_HOST = config.get("app", "APP_HOST")
-APP_PORT = config.get("app", "APP_PORT")
+config.read(".env")
 
 SCREEN_W = int(config.get("game", "WIDTH"))
 SCREEN_H = int(config.get("game", "HEIGHT"))

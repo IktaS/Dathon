@@ -7,6 +7,7 @@ from threading import Thread
 from menu import *
 from game_constant import *
 from match import *
+from network import *
 
 # is_running=True
 class Game():
@@ -16,7 +17,10 @@ class Game():
         pygame.display.set_caption(self.title)
         self.screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
         self.clock = pygame.time.Clock()
-        self.menu= Menu()
+
+        self.server = Server()
+        self.menu= Menu(self.server)
+
         
     def run(self):
         self.screen.fill(CLR_Parchment)
@@ -35,7 +39,9 @@ class Game():
         pygame.quit()
 
 class Menu():
-    def __init__(self, *args):
+    def __init__(self, server, *args):
+        self.server = server
+
         self.font={
             'title': pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),88),
             'text' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),36)
@@ -46,7 +52,7 @@ class Menu():
             'matchmake' : Button(self.font['text'],"Matchmaking",CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,726,MENU_BTN_BORDER,MENU_BTN_EDGE),
             'htp' : TextButton(self.font['text'],"How to Play",CLR_Tan,600,867,CLR_Paarl)
         }
-        self.inputBox=InputBox(self.font['text'],470,288,500, 100, CLR_Black,CLR_White,"")
+        self.inputBox=InputBox(self.server, self.font['text'],470,288,500, 100, CLR_Black,CLR_White,"")
         self.title=TextStatic(self.font['title'],"Dathon",CLR_Paarl,553,87)
         self.menuState={
             "popUpCGame":False,
@@ -55,7 +61,7 @@ class Menu():
         }
     def draw(self,screen):
         for b in self.buttons:
-            self.buttons[b].draw(screen)  
+            self.buttons[b].draw(screen)
         self.inputBox.draw(screen)
         self.title.draw(screen)
 
@@ -69,8 +75,6 @@ class Menu():
             self.buttons[b].hover(event)
         self.inputBox.event_handler(event)
         
-        
-            
 
 
 
