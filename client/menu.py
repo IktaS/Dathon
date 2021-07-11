@@ -7,8 +7,10 @@ class Button():
         self.text = text
         self.def_text_color = text_def_color
         self.act_text_color = text_act_color
+        self.text_color=self.def_text_color
         self.def_bg_color=bg_def_color
         self.act_bg_color=bg_act_color
+        self.bg_color=self.def_bg_color
         self.width=rect_w
         self.height=rect_h
         self.x=rect_x
@@ -17,11 +19,13 @@ class Button():
         self.edge=edge
         self.default_surface=font.render(text, True, text_def_color)
         self.active_surface=font.render(text, True, text_act_color)
+        self.surface=self.default_surface
         self.bg_default_rect = self.default_surface.get_rect(width=self.width,height=self.height,x=self.x,y=self.y)
         self.bg_active_rect = self.active_surface.get_rect(width=self.width,height=self.height,x=self.x,y=self.y)
+        self.bg_rect = self.bg_default_rect
         self.text_default_rect = self.default_surface.get_rect(center=self.bg_default_rect.center)
         self.text_active_rect = self.active_surface.get_rect(center=self.bg_active_rect.center)
-        self.rect=self.bg_default_rect
+        self.text_rect=self.text_default_rect
         self.screen=screen
         self.hovered= False
         self.popupObj= popup
@@ -31,32 +35,29 @@ class Button():
     def update(self):
         # print(self.border,self.edge)
         if self.hovered:
-            self.rect=self.bg_active_rect
-            pygame.draw.rect(self.screen, self.act_bg_color, self.bg_active_rect,0,self.edge)
-            self.screen.blit(self.active_surface, self.text_active_rect)
+            self.text_rect=self.text_active_rect
+            self.bg_color=self.act_bg_color
+            self.surface=self.active_surface
+            self.bg_rect = self.bg_active_rect
         else:
-            self.rect=self.bg_default_rect
-            pygame.draw.rect(self.screen, self.def_bg_color, self.bg_default_rect,self.border,self.edge)
-            self.screen.blit(self.default_surface, self.text_default_rect)
-        if self.state:
-            self.popupObj.update()
+            self.text_rect=self.text_default_rect
+            self.bg_color=self.def_bg_color
+            self.surface=self.default_surface
+            self.bg_rect = self.bg_default_rect
+    def draw(self):
+        if self.hovered:
+            pygame.draw.rect(self.screen, self.bg_color, self.bg_rect,0,self.edge)
+        else:
+            pygame.draw.rect(self.screen, self.bg_color, self.bg_rect,self.border,self.edge)
+        self.screen.blit(self.surface, self.text_rect)
     def event_handler(self,event):
-        self.popupObj.event_handler(event)
+        # self.popupObj.event_handler(event)
         if event.type == pygame.MOUSEMOTION:
-            self.hovered= self.rect.collidepoint(event.pos)
-            # self.state=False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.hovered:
-                self.state=True
-                print(self.text)
-        if event.type == pygame.KEYDOWN:
-            if event.key==pygame.K_RETURN:
-                self.state=False
-                print(self.text)
-            if event.key==pygame.K_ESCAPE:
-                self.state=False
-                print(self.text)
-        
+            self.hovered= self.bg_rect.collidepoint(event.pos)
+        if event.type == pygame.MOUSEBUTTONDOWN and self.bg_rect.collidepoint(event.pos):
+            self.hovered= False
+            return True
+        return False
                 
 class TextStatic():
     def __init__(self,screen,font,text_content,text_color,x,y):
@@ -115,18 +116,18 @@ class PopUpMenu():
         self.hovered= False
         
         
-    def update(self):
+    def draw(self):
         pygame.draw.rect(self.screen, (207, 166, 124,255), self.bg_rect, 0,20)
         self.screen.blit(self.sf_text1, self.sf_text1_rect)
         self.screen.blit(self.sf_text2, self.sf_text2_rect)
         self.screen.blit(self.sf_text3, self.sf_text3_rect)
         
     def event_handler(self,event):
-        if event.type == pygame.MOUSEMOTION:
-            self.hovered= self.bg_rect.collidepoint(event.pos)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.hovered:
-                print("pop")
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                print("p")
+                return False
+        return True
 class InputBox:
     def __init__(self,screen,font, x, y, w, h,color,active_color, text=''):
         self.font=font
@@ -136,7 +137,8 @@ class InputBox:
         self.color=self.color_inactive
         self.text = text
         self.text_limit=15
-        self.display = text[-self.text_limit:]
+        # self.display = text[-self.text_limit:]
+        self.display = "Enter name..."
         self.txt_surface = self.font.render(self.display, True, self.color)
         self.rect=self.txt_surface.get_rect(width=w,height=h,x=x,y=y)
         self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
@@ -152,7 +154,6 @@ class InputBox:
             self.color = self.color if self.color_active else self.color_inactive
         if event.type == pygame.KEYDOWN:
             if self.active:
-                print("hi")
                 if event.key == pygame.K_RETURN:
                     print(self.text)
                 elif event.key == pygame.K_BACKSPACE:
