@@ -88,10 +88,9 @@ class TextButton():
             self.hovered= self.rect.collidepoint(event.pos)
 
 class PopUpMenu():
-    def __init__(self, screen):
+    def __init__(self):
         self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
         self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
-        self.screen=screen
         self.sf_text1=self.font.render("This is your code", True, (0,0,0))
         self.sf_text2=self.font_code.render("ABCDEF", True, (255,255,255))
         self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
