@@ -1,9 +1,9 @@
 import configparser
+from clients import Client, ClientFactory, ClientNumberIDGenerator
+from room import UIDGenerator, Room, RoomFactory
 import socket
 import sys
 import threading
-from client import *
-from room import *
 
 config = configparser.ConfigParser()
 config.read(".env")
@@ -13,13 +13,17 @@ APP_PORT = config.get("app", "APP_PORT")
 
 BUFFER_SIZE = int(config.get("app", "BUFFER_SIZE"))
 
+
 class Server:
-    def __init__(self, host, port, logger, clientFactory, BUFFER_SIZE, listen = 100):
+    def __init__(self, host, port, logger, clientFactory, BUFFER_SIZE, listen=100, roomFactory: RoomFactory = None):
         super().__init__()
         self.host = host
         self.port = port
         self.logger = logger
         self.clientFactory = clientFactory
+
+        self.roomFactory = roomFactory
+        self.rooms: dict[str, Room] = {}
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -31,26 +35,26 @@ class Server:
         self.BUFFER_SIZE = BUFFER_SIZE
 
         self.closed = False
-    
+
     def register_client(self, client):
         self.clients.append(client)
-    
+
     def remove_client(self, client):
         if client in self.clients:
             client.stop()
             self.clients.remove(client)
-    
+
     def make_client(self, sock, addr):
         return self.clientFactory.createClient(self.BUFFER_SIZE, sock, addr)
 
     def log_message(self, message):
         print(message, file=self.logger)
-    
+
     def start_server(self):
         # start server thread running run()
         self.thread = threading.Thread(target=self.run)
         self.thread.start()
-    
+
     def stop_server(self):
         # stop server thread
         self.closed = True
@@ -64,7 +68,6 @@ class Server:
                 return client
         return None
 
-    
     def run(self):
         serverHandler = Server.ServerHandler(self, self.logger)
         while True and not self.closed:
@@ -76,20 +79,26 @@ class Server:
             client.sendEncode(str(client.id))
             self.register_client(client)
 
+    def saveScore(score, username):
+        pass
+
     class LoggerHandler:
         def __init__(self, logger):
             self.logger = logger
-        
+
         def handle(self, client, message):
-            print("client " + str(client) + " said " + str(message), file=self.logger)
-    
+            print("client " + str(client) + " said " +
+                  str(message), file=self.logger)
+
     class ServerHandler:
         def __init__(self, server, logger):
             self.logger = logger
-            self.server = server
-        
-        def handle(self, client, command):
-            print("client " + str(client) + " said " + str(command), file=self.logger)
+            self.server: Server = server
+
+        def handle(self, client: Client, command: str):
+            print("client " + str(client) + " said " +
+                  str(command), file=self.logger)
+            command = command.rstrip()
             params = command.split("|")
             if params[0] == "username":
                 if params[1]:
@@ -103,50 +112,42 @@ class Server:
                         if params[2] and params[2] != "":
                             c = self.server.find_client(params[2])
                             if c == None:
-                                print("Could not find client id " + params[2], file=self.logger)
+                                print("Could not find client id " +
+                                      params[2], file=self.logger)
                                 client.sendEncode("username|check|")
                             else:
-                                client.sendEncode("username|check|" + c.username)
+                                client.sendEncode(
+                                    "username|check|" + c.username)
                         else:
                             client.sendEncode("username|check|")
                 else:
                     client.sendEncode("username|FAIL")
             elif params[0] == "scoreboard":
                 print("scoreboard")
-                #TODO: implement scoreboard command
+                # TODO: implement scoreboard command
             elif params[0] == "private":
-                print("private")
-                #TODO: implement private command
-                # this is for demo only delete afterwards
                 if params[1]:
-                    print(params[1])
                     if params[1] == "make":
-                        self.room_factory = RoomFactory()
-                        self.room = self.room_factory.create_room(client)
-                        print("created room with id", self.room.id)
-                        client.sendEncode("private|" + self.room.room_code)
-
+                        room = self.server.roomFactory.newRoom(client)
+                        self.server.rooms[room.id] = room
+                        client.sendEncode("private|" + room.id)
                     elif params[1] == "join":
                         if params[2]:
-                            if params[2] == self.room.room_code:
-                                self.room.add_client(client)
+                            if params[2] in self.server.rooms:
+                                self.server.rooms[params[2]].addClient(client)
                             else:
-                                client.sendEncode("room|failed")
+                                client.sendEncode("private|failed")
 
             elif params[0] == "matchmake":
                 print("matchmake")
-                #TODO: implement matchmake command
-
-            # this is for demo only delete afterwards
-            elif params[0] == "room" and self.room.check_client(client):
-                if params[1] == "chat":
-                    self.room.chat(params[2], client)
+                # TODO: implement matchmake command
 
 
+clientFactory = ClientFactory(ClientNumberIDGenerator())
+roomFactory = RoomFactory(UIDGenerator(6))
 
-factory = ClientFactory(ClientNumberIDGenerator())
-
-s = Server('localhost', 8081, sys.stdout, factory, 2048)
+s = Server('localhost', 8081, sys.stdout,
+           clientFactory, 2048, roomFactory=roomFactory)
 
 try:
     s.start_server()

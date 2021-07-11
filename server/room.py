@@ -1,149 +1,124 @@
-import string
+import json
 import random
+from clients import Client
+from typing import List
+import string
 
-from client import *
 
-def code_generator():
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+class UIDGenerator:
+    def __init__(self, length) -> None:
+        self.length = length
+
+    def newID(self) -> str:
+        return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(self.length))
+
 
 class RoomFactory:
-    def __init__(self):
-        self.currentID = 0
-    
-    def create_room(self, client):
-        self.currentID += 1
-        return Room(self.currentID, code_generator(), client)
+    def __init__(self, IDGenerator: UIDGenerator) -> None:
+        self.id_generator = IDGenerator
+
+    def newRoom(self, master: Client = None):
+        return Room(self.id_generator.newID(), master)
 
 
 class Room:
-    def __init__(self, id, room_code, client):
+    def __init__(self, id, master: Client = None) -> None:
         self.id = id
-        self.room_code = room_code
-        self.clients = [client]
-        self.board = {}
-        print(self.id, self.room_code)
+        self.master: Client = master
+        self.clients: List[Client] = []
+        self.previousHandlers = {}
+        self.handler = RoomCommandHandler(self)
 
-    def start_game(self):
-        self.broadcast('room|' + self.id + '|start')
-        self.first_move()
-        
-        for c in self.clients:
-            # board is reverse this way --> for the player perspective
-            self.board[c] = [7,7,7,7,7,7,7, 0]
-    
-    def first_move(self):
-        self.current_player = random.choice(self.clients)
-        self.sendOther( 'room|move|other' , self.current_player)
-        self.sendMe('room|move|you', self.current_player)
+        if self.master is not None:
+            self.clients.append(master)
+            self.previousHandlers[master] = master.commandHandler
+            master.setCommandHandler(self.handler)
 
-    def move(self, client, index):
-        if client != self.current_player:
-            return
-
-        biji = self.board[client][index]
-        self.board[client][index] = 0
-
-        other_client = self.getOther_client(client)
-        self.sendMe('room|move|' + index, other_client)
-
-        while biji:
-            i = index + 1
-            while biji:
-                self.board[client][i] += 1
-                biji -= 1
-                if biji == 0:
-                    if self.board[client][i] > 1:
-                        biji = self.board[client][i]
-                        self.board[client][i] = 0
-                    else:
-                        self.board[other_client][7] = self.board[client][6-i]
-                        self.board[client][6-i] = 0
-                i += 1
-                if i == 8:
-                    break
-
-            i = 0
-            while biji:
-                self.board[other_client][i] += 1
-                biji -= 1
-                if biji == 0:
-                    if self.board[other_client][i] > 1:
-                        biji = self.board[other_client][i]
-                        self.board[client][i] = 0                        
-                i += 1
-                if i == 7:
-                    break 
-
-        if ( self.check_endgame()):
-            return
-            # Do something
-        else:
-            self.checkturn(other_client)
-
-    def checkturn(self, other_client):
-        biji = 0
-        for i in range(7) :
-            biji += self.board[other_client][i]
-        if biji > 0:
-            self.current_player(other_client)
-
-
-    def chat(self, message, client):
-        print('room|chat|' + client.username + '|' + message, client)
-        self.sendOther('room|chat|' + client.username + '|' + message, client)
-
-    def getOther_client(self, client):
-        for c in self.clients:
-            if c != client:
-                return c
-
-    def check_endgame(self):
-        biji = 0
-        for c in self.clients:
-            biji += self.board[c][7]
-
-        if biji == 98:
-            self.endgame()
-            return True
-        else:
+    def clientLeave(self, client: Client) -> bool:
+        if client not in self.clients:
             return False
 
-    def endgame(self):
-        if self.board[ self.clients[0] ][7] > self.board[ self.clients[1] ][7]:
-            self.sendOther('room|end|lose', self.clients[0])
-            self.sendMe('room|end|win', self.clients[0])
-        elif self.board[ self.clients[0] ][7] < self.board[ self.clients[1] ][7]:
-            self.sendOther('room|end|lose', self.clients[1])
-            self.sendMe('room|end|win', self.clients[1])
-        else:
-            self.broadcast('room|end|draw')
+        self.clients.remove(client)
+        client.setCommandHandler(self.previousHandlers[client])
+        self.previousHandlers.pop(client, None)
 
+        self.broadcastMessageEncode(
+            "room|" + str(self.id) + "|exit|" + str(client.id),
+            client
+        )
 
-    def broadcast(self, message):
-        for c in self.clients:
-            c.sendEncode(message)
-
-
-    def sendOther(self, message, client):
-        for c in self.clients:
-            if c != client:
-                c.sendEncode(message)
-
-    def sendMe(self, message, client):
-        client.sendEncode(message)
-        
-    def add_client(self, client):
-        self.broadcast("room|" + client.username + " has join")
-        self.clients.append(client)
-        # if len(self.clients) > 1:
-        #     self.start_game()
-
-    def remove_client(self, client):
-        if client in self.clients:
-            self.clients.remove(client)
-
-    def check_client(self, client):
-        for c in self.clients:
-            if c == client:
+        if client == self.master:
+            if not len(self.clients):
+                self.master = None
                 return True
-        return False
+            self.master = random.choice(self.clients)
+            if self.master is not None:
+                self.broadcastMessageEncode(
+                    "room|" + str(self.id) + "|master|" + str(self.master.id)
+                )
+
+        return True
+
+    def addClient(self, client: Client) -> None:
+        self.previousHandlers[client] = client.commandHandler
+        client.setCommandHandler(self.handler)
+        self.clients.append(client)
+
+        try:
+            client.sendEncode(self.toJSON())
+        except Exception as e:
+            print(e)
+
+        self.broadcastMessageEncode(
+            "room|" + str(self.id) + "|join|" + str(client.id),
+            client
+        )
+
+    def startMatch(self, caller: Client) -> bool:
+        if caller is not self.master:
+            return False
+        # TODO: implement match
+
+    def broadcastMessageEncode(self, message: str, exception: Client = None):
+        if not len(self.clients):
+            return
+        for client in self.clients:
+            if exception != None and client == exception:
+                continue
+            print("sending to: " + str(client.username))
+            client.sendEncode(message)
+
+    def toJSON(self):
+        jsonObject = RoomData()
+        jsonObject.master = self.master.id
+        jsonObject.clients = []
+        for client in self.clients:
+            jsonObject.clients.append(client.id)
+        return json.dumps(jsonObject, default=lambda o: o.__dict__,
+                          sort_keys=True, indent=4)
+
+
+class RoomData:
+    def __init__(self) -> None:
+        self.master = None
+        self.clients = []
+
+
+class RoomCommandHandler:
+    def __init__(self, room: Room) -> None:
+        self.room = room
+
+    def handle(self, client: Client, command: str):
+        command = command.rstrip()
+        params = command.split("|")
+        if params[0] == "exit":
+            try:
+                succ = self.room.clientLeave(client)
+            except Exception as e:
+                print(e)
+            if succ:
+                client.sendEncode("room|exit|success")
+            else:
+                client.sendEncode("room|exit|fail")
+        elif params[0] == "start":
+            self.room.startMatch(client)
