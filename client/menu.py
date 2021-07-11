@@ -115,7 +115,9 @@ class PopUpMenu():
                 pass
 
 class InputBox:
-    def __init__(self,font, x, y, w, h,color,active_color, text=''):
+    def __init__(self, server, font, x, y, w, h,color,active_color, text=''):
+        self.server = server
+
         self.font=font
         self.color_inactive = color
         self.color_active = active_color
@@ -138,7 +140,7 @@ class InputBox:
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
-                    print(self.text)
+                    self.server.send('username|update|' + self.text)
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                     self.display = self.text[-self.text_limit:]
