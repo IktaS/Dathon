@@ -17,19 +17,20 @@ class GameState(Enum):
 
 # is_running=True
 class Game():
+    # state=GameState.MENU
     def __init__(self, *args):
         pygame.init()
+        self.state=GameState.MENU
+        self.prevsstate=GameState.MENU
         self.title="Dathon"
         pygame.display.set_caption(self.title)
         self.screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
         self.clock = pygame.time.Clock()
-
         self.server = Server()
         self.menu= Menu(self.server)
-        self.state=GameState.MENU
         self.board= Board()
-        self.htp= HowToPlay()
-        self.hs= HighestScore()
+        self.htp= HowToPlay(self)
+        self.hs= HighestScore(self)
         
     def run(self):
         self.screen.fill(CLR_Parchment)
@@ -39,35 +40,40 @@ class Game():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_running=False
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.menu.buttons["cgame"].hovered:
-                        self.state=GameState.INGAME
-                    if self.menu.buttons["htp"].hovered:
-                        self.state=GameState.HTP
-                    if self.menu.trophy_rect.collidepoint(event.pos) and event.type == pygame.MOUSEBUTTONDOWN:
-                        self.state=GameState.HS
-                if(self.state==GameState.MENU):
+                if self.state==GameState.MENU:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        print("ko"+str(self.state))
+                        if self.menu.buttons["cgame"].bg_rect.collidepoint(event.pos) and self.state==self.prevsstate:
+                            self.prevsstate=self.state
+                            self.state=GameState.INGAME
+                        elif self.menu.buttons["htp"].rect.collidepoint(event.pos) and self.state==self.prevsstate:
+                            self.prevsstate=self.state
+                            self.state=GameState.HTP
+                            # event=pygame.NOEVENT
+                        elif self.menu.trophy_rect.collidepoint(event.pos) and self.state==self.prevsstate:
+                            self.prevsstate=self.state
+                            self.state=GameState.HS
                     self.menu.event_handler(event)
-                if(self.state==GameState.INGAME):
+                elif(self.state==GameState.INGAME):
                     self.board.event_handler(event)
-                if(self.state==GameState.HTP):
+                elif(self.state==GameState.HTP):
                     self.htp.event_handler(event)
-                if(self.state==GameState.HS):
+                elif(self.state==GameState.HS):
                     self.hs.event_handler(event)
             if(self.state==GameState.MENU):
                 self.menu.update()
                 self.menu.draw(self.screen)
-            if(self.state==GameState.INGAME):
+            elif(self.state==GameState.INGAME):
                 self.board.update()
                 self.board.draw(self.screen)
-            if(self.state==GameState.HTP):
+            elif(self.state==GameState.HTP):
                 self.htp.update()
                 self.htp.draw(self.screen)
-            if(self.state==GameState.HS):
+            elif(self.state==GameState.HS):
                 self.hs.update()
                 self.hs.draw(self.screen)
             pygame.display.flip()
-            clock.tick()
+            clock.tick(30)
         pygame.quit()
 
 class Menu():
@@ -174,7 +180,8 @@ class Board(object):
             self.myBoard[i].event_handler(event)
             
 class HowToPlay(object):
-    def __init__(self, *args):
+    def __init__(self,game, *args):
+        self.game=game
         self.font={
             'text' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),36)
         }
@@ -187,10 +194,16 @@ class HowToPlay(object):
         self.button.update()
     def event_handler(self,event):
         self.button.hover(event)
+        if event.type == pygame.MOUSEBUTTONDOWN and self.button.bg_rect.collidepoint(event.pos):
+            print("hehehe")
+            print(self.game.state)
+            self.game.state=GameState.MENU
+            print(self.game.state)
         
                 
 class HighestScore(object):
-    def __init__(self, *args):
+    def __init__(self,game, *args):
+        self.game=game
         self.playerList=[
             {
                 "username": "rafid",
@@ -244,6 +257,10 @@ class HighestScore(object):
         self.button.update()
     def event_handler(self,event):
         self.button.hover(event)
+        if event.type == pygame.MOUSEBUTTONDOWN and self.button.bg_rect.collidepoint(event.pos):
+            self.game.state=GameState.MENU
+            print("hehe")
+        
         
                     
 
