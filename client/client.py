@@ -117,6 +117,101 @@ def game():
         clock.tick(1000)
     pygame.quit()
 
+def howtoplay():
+    screen.fill(CLR_Parchment)
+    is_running=True
+    board= pygame.image.load('assets/DakonBoard.png').convert_alpha()
+    board_pos=(42,290)
+    
+    playerScoreHole=SeedHole(screen,50,95,410,0)
+    enemyScoreHole=SeedHole(screen,50,925,410,0)
+    playerHole=[
+        SeedHole(screen,40,806,475),
+        SeedHole(screen,40,708,475),
+        SeedHole(screen,40,610,475),
+        SeedHole(screen,40,512,475),
+        SeedHole(screen,40,414,475),
+        SeedHole(screen,40,316,475),
+        SeedHole(screen,40,218,475),
+        # playerScoreHole
+    ]
+    enemyHole=[
+        SeedHole(screen,40,218,343),
+        SeedHole(screen,40,316,343),
+        SeedHole(screen,40,414,343),
+        SeedHole(screen,40,512,343),
+        SeedHole(screen,40,610,343),
+        SeedHole(screen,40,708,343),
+        SeedHole(screen,40,806,343),
+        # enemyScoreHole
+    ]
+    scoreBox=[
+        ScoreBox(screen,0,42,927,10),
+        ScoreBox(screen,0,1215,64,10),
+    ]
+    playerBox=[
+        ValueBox(screen,806,620),
+        ValueBox(screen,708,620),
+        ValueBox(screen,610,620),
+        ValueBox(screen,512,620),
+        ValueBox(screen,414,620),
+        ValueBox(screen,316,620),
+        ValueBox(screen,218,620),
+    ]
+    enemyBox=[
+        ValueBox(screen,806,198),
+        ValueBox(screen,708,198),
+        ValueBox(screen,610,198),
+        ValueBox(screen,512,198),
+        ValueBox(screen,414,198),
+        ValueBox(screen,316,198),
+        ValueBox(screen,218,198),
+    ]
+    match = Match(playerHole, playerBox, enemyHole, enemyBox, playerScoreHole, enemyScoreHole, scoreBox)
+    
+    
+    
+    while is_running:
+        screen.fill(CLR_Parchment)
+        screen.blit(board, board_pos)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                is_running=False
+            for i in range(7):
+                playerHole[i].event_handler(event)
+                if event.type == pygame.MOUSEBUTTONDOWN and playerHole[i].hovered:
+                    # Thread(target=match.move(), args=(i)).start()
+                    match.move(i)
+                    print("Jalan Gan")
+
+        
+        for hole in playerHole:
+            hole.update()
+        for hole in enemyHole:
+            hole.update()
+        for box in scoreBox:
+            box.update()
+        for hole in playerBox:
+            hole.update()
+        for hole in enemyBox:
+            hole.update()
+        playerScoreHole.draw()
+        enemyScoreHole.draw()
+        for hole in playerHole:
+            hole.draw()
+            
+        for hole in enemyHole:
+            hole.draw()
+        for box in scoreBox:
+            box.draw()
+        for hole in playerBox:
+            hole.draw()
+        for hole in enemyBox:
+            hole.draw()
+        pygame.display.flip()
+        clock.tick(1000)
+    pygame.quit()
+    
 def waiting():
     screen.fill(CLR_Parchment)
     is_running=True

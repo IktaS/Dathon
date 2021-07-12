@@ -139,7 +139,7 @@ class InputBox:
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
-                    self.server.send('username|update|' + self.text)
+                    print(self.text)
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                     self.display = self.text[-self.text_limit:]
