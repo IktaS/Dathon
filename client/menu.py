@@ -99,10 +99,11 @@ class TextButton():
 class PopUpMenu():
     def __init__(self,game):
         self.game=game
+        self.text=""
         self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
         self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
         self.sf_text1=self.font.render("This is your code", True, (0,0,0))
-        self.sf_text2=self.font_code.render("ABCDEF", True, (255,255,255))
+        self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
         self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
         
         self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
@@ -118,20 +119,19 @@ class PopUpMenu():
         screen.blit(self.sf_text2, self.sf_text2_rect)
         screen.blit(self.sf_text3, self.sf_text3_rect)
     def update(self):
-        pass
+        self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
+        # pass
         
     def event_handler(self,event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                # pass
-                self.game.state=GameState.MENU
-                print(self.game.state)
+        pass
+        
 class PopUpInput():
     def __init__(self):
         self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
         self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
         self.sf_text1=self.font.render("This is your code", True, (0,0,0))
         self.sf_text2=self.font_code.render("ABCDEF", True, (255,255,255))
+        self.input=InputBox()
         self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
         
         self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
