@@ -58,6 +58,15 @@ class Server:
             else:
                 print("invalid request")
     
+        elif params[0] == "match":
+            if params[1] == "start":
+                self.game.state.INGAME
+            elif params[1] == "move":
+                if params[2] == "other":
+                    pass
+                elif params[2] == "you":
+                    pass            
+
         elif params[0] == "private":
             self.game.menu.popUp.text = params[1]
 
