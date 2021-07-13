@@ -41,7 +41,7 @@ class Match:
             return
 
         other_client = self.getOther_client(client)
-        other_client.sendEncode('match|move|' + i)
+        other_client.sendEncode('match|move|' + str(i))
 
         biji = self.board[client][i]
         self.board[client][i] = 0

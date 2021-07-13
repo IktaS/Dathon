@@ -75,7 +75,8 @@ class Server:
             if params[1] == "start":
                 self.game.initMatch()
             elif params[1] == "move":
-                pass
+                self.game.match.myturn = True
+                self.game.match.enemymove(int(params[2]))
 
             elif params[1] == "other":
                 self.game.match.myturn = False
