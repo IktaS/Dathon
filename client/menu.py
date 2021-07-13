@@ -67,6 +67,9 @@ class TextStatic():
     def draw(self,screen):
         screen.blit(self.surface, (self.x,self.y))
 
+    def update(self):
+        self.surface=self.font.render(self.text, True, self.color)
+
 class TextButton():
     def __init__(self,font,text_content,text_color,x,y,active_color):
         self.font=font
@@ -94,8 +97,8 @@ class PopUpMenu():
     def __init__(self,game):
         self.game=game
         self.text=""
-        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),44)
-        self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
+        self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
         
         self.sf_text1=self.font.render("Share code to your friend!", True, (0,0,0))
         
@@ -124,8 +127,8 @@ class PopUpInput():
     def __init__(self,game):
         self.game=game
         self.text=""
-        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),44)
-        self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
+        self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
         
         self.sf_text1=self.font.render("Enter your friend coe!", True, (0,0,0))
         self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))

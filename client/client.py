@@ -25,7 +25,7 @@ clock = pygame.time.Clock()
 def game():
     screen.fill(CLR_Parchment)
     is_running=True
-    board= pygame.image.load('assets/DakonBoard.png').convert_alpha()
+    board= pygame.image.load('./client/assets/DakonBoard.png').convert_alpha()
     board_pos=(42,290)
     
     playerScoreHole=SeedHole(screen,50,95,410,0)
@@ -120,7 +120,7 @@ def game():
 def howtoplay():
     screen.fill(CLR_Parchment)
     is_running=True
-    board= pygame.image.load('assets/DakonBoard.png').convert_alpha()
+    board= pygame.image.load('./client/assets/DakonBoard.png').convert_alpha()
     board_pos=(42,290)
     
     playerScoreHole=SeedHole(screen,50,95,410,0)
@@ -230,8 +230,8 @@ def menu():
     # screen.fill(CLR_BG_MENU)
     is_running=True
     # Menu
-    title_font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),88)
-    menu_font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),36)
+    title_font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),88)
+    menu_font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),36)
     menu=["Create Game","Join Game","How to Play?"]
     text_title = TextStatic(screen,title_font,title,CLR_Paarl,553,128)
     pu_cgame=PopUpMenu(screen)

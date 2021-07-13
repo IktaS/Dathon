@@ -3,12 +3,13 @@ import socket
 import select
 import sys
 from threading import Thread
+from enum import Enum
 
 config = configparser.ConfigParser()
 config.read(".env")
 
-# APP_HOST = config.get("app", "APP_HOST")
 APP_HOST = 'localhost'
+# APP_HOST = config.get("app", "APP_HOST")
 APP_PORT = int(config.get("app", "APP_PORT"))
 
 BUFFER_SIZE = int(config.get("app", "BUFFER_SIZE"))
@@ -25,7 +26,7 @@ class Server:
         self.run()
 
     def run(self):
-        Thread(target=self.send, args=()).start()
+        # Thread(target=self.send, args=()).start()
         Thread(target=self.recv_thread, args=()).start()
 
     def send(self, command: str):
@@ -41,6 +42,7 @@ class Server:
             self.handle( data.decode() )
 
     def handle(self, cmd):
+        print(cmd)
         params = cmd.split("|")
 
         if params[0] == "username":
@@ -57,22 +59,33 @@ class Server:
                         print("id not found")
             else:
                 print("invalid request")
+
+        # scoreboard in json
+        # scoreboard in json
+
+        # elif params[0] == "room":
+        #     print(cmd)
+        elif params[0] == "private":
+            if params[1] == "failed":
+                pass
+            else:
+                self.game.menu.popUp.text = params[1]
     
         elif params[0] == "match":
             if params[1] == "start":
-                self.game.state.INGAME
+                self.game.initMatch()
             elif params[1] == "move":
-                if params[2] == "other":
-                    pass
-                elif params[2] == "you":
-                    pass            
+                pass
 
-        elif params[0] == "private":
-            self.game.menu.popUp.text = params[1]
-
-        else:
-            print(cmd)
-
+            elif params[1] == "other":
+                self.game.match.myturn = False
+                self.game.board.textName["enemy"].text = params[2]
+                self.game.board.updateName()
+            elif params[1] == "you":
+                self.game.match.myturn = True
+                self.game.board.textName["enemy"].text = params[2]
+                self.game.board.updateName()
+                
 
 # try:
 #     # server = Server(APP_HOST, APP_PORT)

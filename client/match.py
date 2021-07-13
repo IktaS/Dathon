@@ -1,149 +1,80 @@
-import string
-import random
-import time
-
 from client import *
 
 class Match:
-    def __init__(self, playerHole, playerBox, enemyHole, enemyBox, playerScoreHole, enemyScoreHole, scoreBox):
-        self.playerHole = playerHole
-        self.playerBox = playerBox
-        self.enemyHole = enemyHole
-        self.enemyBox = enemyBox
-        self.playerScoreHole = playerScoreHole
-        self.enemyScoreHole = enemyScoreHole
-        self.scoreBox = scoreBox
-        self.clock = pygame.time.Clock()
-        self.turn = False
+    def __init__(self, game):
+        self.game = game
+        self.board = game.board
+        self.myturn = False
 
-    def timer(self):
-        timer = 1
-        dt = 0
-
-        while True:
-            timer -= dt
-            if timer <= 0:
-                break
-            dt = self.clock.tick(60)/1000
-
-        return
-    
-    def drawPlayer(self, i):
-        self.playerBox[i].update()
-        self.playerHole[i].update()
-        self.playerHole[i].hovered=True
-        # self.timer()
-        self.playerBox[i].draw()
-        self.playerHole[i].draw()
-        self.playerHole[i].hovered=False
-
-    def drawEnemy(self, i):
-        self.enemyBox[i].update()
-        self.enemyHole[i].update()
-        self.enemy[i].hovered=True
-        # self.timer()
-        self.enemyBox[i].draw()
-        self.enemyHole[i].draw()
-        self.enemyHole[i].hovered=False
-
-    def drawScoreboard(self):
-        self.playerScoreHole.update()
-        self.enemyScoreHole.update()
-        self.scoreBox[0].update()
-        self.scoreBox[1].update()
-
-        self.playerScoreHole.draw()
-        self.enemyScoreHole.draw()
-        self.scoreBox[0].draw()
-        self.scoreBox[1].draw()
-    
     def move(self,i):
-        # if self.turn == False:
-            # return
+        if self.myturn == False:
+            return
         
-        biji = self.playerHole[i].value
-        self.playerHole[i].value = 0
-        self.playerBox[i].value = 0
-        self.drawPlayer(i)
+        biji = self.board.myBoard[i].value
+        self.board.myBoard[i].value = 0
+        self.board.myBox[i].value = 0
+        # draw here
 
         while biji:
             while biji:
                 i += 1
                 if i == 7:
                     break
-                # print("p"+str(i)+"--"+str(self.playerHole[i].value)+"--"+str(biji))
 
-                self.playerHole[i].value += 1
-                self.playerBox[i].value += 1
-                self.drawPlayer(i)
-                # self.timer()
-                # time.sleep(5)
-                # pygame.time.wait(10)
+                self.board.myBoard[i].value += 1
+                self.board.myBox[i].value += 1
+                # draw here
+
                 biji -= 1
                 if biji == 0:
-                    if self.playerHole[i].value > 1:
-                        biji = self.playerHole[i].value
-                        self.playerHole[i].value = 0
-                        self.playerBox[i].value = 0
-                        self.drawPlayer(i)
-                        # self.timer()
+                    if self.board.myBoard[i].value > 1:
+                        biji = self.board.myBoard[i].value
+                        self.board.myBoard[i].value = 0
+                        self.board.myBox[i].value = 0
                         
-                        # time.sleep(5)
-                        # pygame.time.wait(10)
-
+                        # draw here
+                        
                     # jika di cekungan sendiri kosong ambil seberang musuh
                     else:
-                        self.scoreBox[0].value += self.enemyHole[6-i].value
-                        self.playerScoreHole.value = self.scoreBox[0].value
-                        self.enemyHole[6-i].value = 0
-                        self.enemyBox[6-i].value = 0
-                        self.drawScoreboard()   
-                        # self.timer()             
-                # self.clock.tick(1)
-            
-            # if biji == 1:
-            #     print("hehe")
+                        self.board.myBoard[6].value += self.board.enemyBoard[6-i].value
+                        self.board.myBox[6].value = self.board.myBoard[6].value
+                        self.board.enemyBoard[6-i].value = 0
+                        self.board.enemyBoard[6-i].value = 0
+                        # draw here
+                        
             if biji > 0:
-                self.scoreBox[0].value += 1
-                self.playerScoreHole.value += 1
+                self.board.myBoard[i].value += 1
+                self.board.myBox[i].value += 1
                 biji -= 1
 
             i = 0
             while biji:
-                # print("e"+str(i)+"--"+str(self.enemyHole[i].value)+"--"+str(biji))
-                self.enemyHole[i].value += 1
-                self.enemyBox[i].value += 1
+                self.board.enemyBoard[i].value += 1
+                self.board.enemyBoard[i].value += 1
                 biji -= 1
 
-                self.drawEnemy(i)
+                # draw here
                 
                 if biji == 0:
-                    if self.enemyHole[i].value > 1:
-                        biji = self.enemyHole[i].value
-                        self.enemyHole[i].value = 0
-                        self.enemyBox[i].value = 0
+                    if self.board.enemyBoard[i].value > 1:
+                        biji = self.board.enemyBoard[i].value
+                        self.board.enemyBoard[i].value = 0
+                        self.board.enemyBox[i].value = 0
                         
-                        self.drawEnemy(i)
-                # self.clock.tick(1)
+                        # draw here
                 i += 1
                 if i == 7:
                     break
             i = 0
-            # self.clock.tick(1)
+            
+        self.board.draw(self.game.screen)
+        self.checkturn()
 
-        self.turn = False
-
-    # def checkturn(self, other_client):
-    #     biji = 0
-    #     for i in range(7) :
-    #         biji += self.board[other_client][i]
-    #     if biji > 0:
-    #         self.current_player(other_client)
-
-
-    # def chat(self, message, client):
-    #     print('room|chat|' + client.username + '|' + message, client)
-    #     self.sendOther('room|chat|' + client.username + '|' + message, client)
+    def checkturn(self):
+        for i in range(7):
+            if self.board.enemyBoard[i].value > 0:
+                self.myturn = False
+                return
 
     # def check_endgame(self):
     #     biji = 0

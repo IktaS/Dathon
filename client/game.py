@@ -13,10 +13,10 @@ class SeedHole():
         self.hover_color=  CLR_Tan
         self.inner_colour= self.normal_color
         self.image_size=(60,60)
-        self.image_sedikit = pygame.transform.scale(pygame.image.load('assets/BijiSedikit.png'),self.image_size)
-        self.image_sedang= pygame.transform.scale(pygame.image.load('assets/BijiSedang2.png'),self.image_size)
-        self.image_banyak= pygame.transform.scale(pygame.image.load('assets/BijiBanyak.png'),self.image_size)
-        self.image_kosong= pygame.transform.scale(pygame.image.load('assets/BijiKosong.png'),self.image_size)
+        self.image_sedikit = pygame.transform.scale(pygame.image.load('./client/assets/BijiSedikit.png'),self.image_size)
+        self.image_sedang= pygame.transform.scale(pygame.image.load('./client/assets/BijiSedang2.png'),self.image_size)
+        self.image_banyak= pygame.transform.scale(pygame.image.load('./client/assets/BijiBanyak.png'),self.image_size)
+        self.image_kosong= pygame.transform.scale(pygame.image.load('./client/assets/BijiKosong.png'),self.image_size)
         self.image = self.image_sedang
         self.x=x
         self.y=y
@@ -71,7 +71,7 @@ class ValueBox():
         self.inner_border_width = 0
         self.normal_color=  CLR_SpicyMix
         self.inner_colour= self.normal_color
-        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),40)
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),40)
         self.value=7
         self.textImage=self.font.render(str(self.value), True, self.border_colour)
         self.image = self.textImage
@@ -111,7 +111,7 @@ class ScoreBox():
         self.outer_w = 192
         self.outer_border_width = 0
         self.normal_color=  CLR_Paarl
-        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),33)
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),33)
         self.value=value
         # self.textImage=
         self.image = self.font.render(str(self.value), True, self.border_colour)

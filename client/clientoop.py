@@ -7,8 +7,9 @@ from threading import Thread
 from menu import *
 from game_constant import *
 from match import *
-from network import *
+from network import Server
 from enum import Enum
+
 class GameState(Enum):
     MENU = 1
     INGAME = 2
@@ -31,9 +32,13 @@ class Game():
         self.clock = pygame.time.Clock()
         self.server = Server(self)
         self.menu= Menu(self)
-        self.board= Board(self)
         self.htp= HowToPlay(self)
         self.hs= HighestScore(self)
+
+    def initMatch(self):
+        self.board = Board(self)
+        self.match = Match(self)
+        self.state = GameState.INGAME
         
     def run(self):
         self.screen.fill(CLR_Parchment)
@@ -46,7 +51,7 @@ class Game():
                     is_running=False
                 if self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame:
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        print("ko"+str(self.state))
+                        # print("ko"+str(self.state))
                         if self.menu.buttons["cgame"].bg_rect.collidepoint(event.pos) and self.state==self.prevsstate:
                             self.server.send('private|make')
                             self.prevsstate=self.state
@@ -93,11 +98,11 @@ class Menu():
     def __init__(self, game, *args):
         self.game=game
         self.server = self.game.server
-        self.trophy= pygame.image.load('assets/Throphy.png').convert_alpha()
+        self.trophy= pygame.image.load('./client/assets/Throphy.png').convert_alpha()
         self.trophy_rect= self.trophy.get_rect(x=1310,y=78)
         self.font={
-            'title': pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),88),
-            'text' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),36)
+            'title': pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),88),
+            'text' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),36)
         }
         self.buttons={
             'cgame' : Button(self.font['text'],"Create Game",CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,444,MENU_BTN_BORDER,MENU_BTN_EDGE),
@@ -109,10 +114,11 @@ class Menu():
         self.title=TextStatic(self.font['title'],"Dathon",CLR_Paarl,553,87)
         self.popUp= PopUpMenu(self.game)
         self.popUpJoin= PopUpInput(self.game)
-        self.inputCode=InputBox(self.font['text'],470,288,500, 100, CLR_Black,CLR_White,"")
+        # self.inputCode=InputBox(self.font['text'],470,288,500, 100, CLR_Black,CLR_White,"")
     def draw(self,screen):
         if self.game.state==GameState.MENU:
-            print("somthing")
+            # print("somthing")
+            pass
         screen.blit(self.trophy, self.trophy_rect)
         for b in self.buttons:
             self.buttons[b].draw(screen)
@@ -120,10 +126,10 @@ class Menu():
         self.title.draw(screen)
         if self.game.state==GameState.CreateGame:
             self.popUp.draw(screen)
-            print("csomthing")
+            # print("csomthing")
         if self.game.state==GameState.JoinGame:
             self.popUpJoin.draw(screen)
-            print("jsomthing")
+            # print("jsomthing")
 
     def update(self):
         for b in self.buttons:
@@ -147,24 +153,25 @@ class Menu():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     self.game.state=GameState.MENU
-                    print(self.game.state)
+                    # print(self.game.state)
         elif self.game.state== GameState.JoinGame:
             self.popUpJoin.event_handler(event)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     # check if code valid here
-                    self.game.state=GameState.INGAME
-                    print(self.popUpJoin.text)
+                    self.game.server.send('private|join|' + self.popUpJoin.text)
+                    # self.game.state=GameState.INGAME
+                    # print(self.popUpJoin.text)
         
 class Chat(object):
     def __init__(self,game):
         self.game=game
         self.font={
-            'nama': pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),25),
-            'input' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Regular.ttf'),28),
-            'chat' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Regular.ttf'),28)
+            'nama': pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),25),
+            'input' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Regular.ttf'),28),
+            'chat' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Regular.ttf'),28)
         }
-        self.card= pygame.image.load('assets/Chat.png').convert_alpha()
+        self.card= pygame.image.load('./client/assets/Chat.png').convert_alpha()
         self.chatInputBox=InputBox(self.font['input'],1067,908,352, 73, CLR_Black,CLR_White,"")
         self.staticText=[]
         self.staticDraw=self.staticText[:4]
@@ -173,7 +180,7 @@ class Chat(object):
         self.chatInputBox.draw(screen)
         # print(self.staticDraw)
         for i in self.staticDraw:
-            print(i)
+            # print(i)
             i["name"].draw(screen)
             i["text"].draw(screen)
             
@@ -205,7 +212,7 @@ class Board(object):
     def __init__(self,game, *args):
         self.game=game
         self.chat=Chat(self.game)
-        self.board= pygame.image.load('assets/DakonBoard.png').convert_alpha()
+        self.board= pygame.image.load('./client/assets/DakonBoard.png').convert_alpha()
         self.myBoard=[
             SeedHole(40,806,475),
             SeedHole(40,708,475),
@@ -248,11 +255,12 @@ class Board(object):
             ValueBox(806,198),
             ScoreBox(0,42,927,10),
         ]
-        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),40)
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),40)
         self.textName={
             "player" : TextStatic(self.font,game.menu.inputBox.text,CLR_Black,72,875),
             "enemy" : TextStatic(self.font,"Musuh",CLR_Black,1244,157)
         }
+
     def draw(self,screen):
         screen.blit(self.board, (42,290))
         for i in range(8):
@@ -270,18 +278,16 @@ class Board(object):
             self.myBox[i].update()
             self.enemyBox[i].update()
         self.chat.update()
+
     def updateName(self):
-        self.textName={
-            "player" : TextStatic(self.font,game.menu.inputBox.text,CLR_Black,72,875),
-            "enemy" : TextStatic(self.font,"Musuh",CLR_Black,1244,157)
-        }
-              
+        for i in self.textName:
+            self.textName[i].update()
+                      
     def event_handler(self,event):
         for i in range(7):
             self.myBoard[i].event_handler(event)
             if event.type == pygame.MOUSEBUTTONDOWN and self.myBoard[i].hovered:
-                    # match.move(i)
-                    pass
+                    self.game.match.move(i)
                     # print("Jalan Gan")
         self.chat.event_handler(event)
             
@@ -289,9 +295,9 @@ class HowToPlay(object):
     def __init__(self,game, *args):
         self.game=game
         self.font={
-            'text' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),36)
+            'text' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),36)
         }
-        self.htp= pygame.image.load('assets/HowToPlay.png').convert_alpha()
+        self.htp= pygame.image.load('./client/assets/HowToPlay.png').convert_alpha()
         self.button= Button(self.font['text'],"Back to Main Menu",CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,826,MENU_BTN_BORDER,MENU_BTN_EDGE)
     def draw(self,screen):
         screen.blit(self.htp, (0,0))
@@ -301,10 +307,10 @@ class HowToPlay(object):
     def event_handler(self,event):
         self.button.hover(event)
         if event.type == pygame.MOUSEBUTTONDOWN and self.button.bg_rect.collidepoint(event.pos):
-            print("hehehe")
-            print(self.game.state)
+            # print("hehehe")
+            # print(self.game.state)
             self.game.state=GameState.MENU
-            print(self.game.state)
+            # print(self.game.state)
         
                 
 class HighestScore(object):
@@ -333,8 +339,8 @@ class HighestScore(object):
             }
         ]
         self.font={
-            'text' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),36),
-            'score' : pygame.font.Font(os.path.join("assets","fonts",'Poppins-Regular.ttf'),40)
+            'text' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),36),
+            'score' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Regular.ttf'),40)
         }
         self.text=[]
         for i in range (5):
@@ -347,7 +353,7 @@ class HighestScore(object):
         # print(self.text[1]["rank"].draw(screen))      
                 
         
-        self.htp= pygame.image.load('assets/HighestScore.png').convert_alpha()
+        self.htp= pygame.image.load('./client/assets/HighestScore.png').convert_alpha()
         self.button= Button(self.font['text'],"Back to Main Menu",CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,826,MENU_BTN_BORDER,MENU_BTN_EDGE)
     def draw(self,screen):
         screen.blit(self.htp, (0,0))
@@ -365,7 +371,7 @@ class HighestScore(object):
         self.button.hover(event)
         if event.type == pygame.MOUSEBUTTONDOWN and self.button.bg_rect.collidepoint(event.pos):
             self.game.state=GameState.MENU
-            print("hehe")
+            # print("hehe")
         
         
                     
