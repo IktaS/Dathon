@@ -14,6 +14,8 @@ class GameState(Enum):
     INGAME = 2
     HTP = 3
     HS=4
+    CreateGame = 5
+    JoinGame = 6
 
 # is_running=True
 class Game():
@@ -27,7 +29,7 @@ class Game():
         self.screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
         self.clock = pygame.time.Clock()
         self.server = Server()
-        self.menu= Menu(self.server)
+        self.menu= Menu(self)
         self.board= Board(self)
         self.htp= HowToPlay(self)
         self.hs= HighestScore(self)
@@ -37,16 +39,19 @@ class Game():
         is_running=True
         while is_running:
             screen.fill(CLR_Parchment)
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_running=False
-                if self.state==GameState.MENU:
+                if self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         print("ko"+str(self.state))
                         if self.menu.buttons["cgame"].bg_rect.collidepoint(event.pos) and self.state==self.prevsstate:
                             self.prevsstate=self.state
-                            self.state=GameState.INGAME
-                            self.board.updateName()
+                            self.state=GameState.CreateGame
+                            # self.board.updateName()
+                        elif self.menu.buttons["jgame"].bg_rect.collidepoint(event.pos):
+                            self.state=GameState.JoinGame
                         elif self.menu.buttons["htp"].rect.collidepoint(event.pos) and self.state==self.prevsstate:
                             self.prevsstate=self.state
                             self.state=GameState.HTP
@@ -61,7 +66,8 @@ class Game():
                     self.htp.event_handler(event)
                 elif(self.state==GameState.HS):
                     self.hs.event_handler(event)
-            if(self.state==GameState.MENU):
+            
+            if(self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame):
                 self.menu.update()
                 self.menu.draw(self.screen)
             elif(self.state==GameState.INGAME):
@@ -78,8 +84,9 @@ class Game():
         pygame.quit()
 
 class Menu():
-    def __init__(self, server, *args):
-        self.server = server
+    def __init__(self, game, *args):
+        self.game=game
+        self.server = self.game.server
         self.trophy= pygame.image.load('assets/Throphy.png').convert_alpha()
         self.trophy_rect= self.trophy.get_rect(x=1310,y=78)
         self.font={
@@ -94,28 +101,52 @@ class Menu():
         }
         self.inputBox=InputBox(self.server, self.font['text'],470,288,500, 100, CLR_Black,CLR_White,"")
         self.title=TextStatic(self.font['title'],"Dathon",CLR_Paarl,553,87)
-        self.menuState="Menu"
+        self.popUp= PopUpMenu(self.game)
+        self.inputCode=InputBox(self.server, self.font['text'],470,288,500, 100, CLR_Black,CLR_White,"")
     def draw(self,screen):
+        if self.game.state==GameState.MENU:
+            print("somthing")
         screen.blit(self.trophy, self.trophy_rect)
         for b in self.buttons:
             self.buttons[b].draw(screen)
         self.inputBox.draw(screen)
         self.title.draw(screen)
+        if self.game.state==GameState.CreateGame:
+            self.popUp.draw(screen)
+            print("csomthing")
+        if self.game.state==GameState.JoinGame:
+            self.popUp.draw(screen)
+            print("jsomthing")
 
     def update(self):
         for b in self.buttons:
             self.buttons[b].update()
         self.inputBox.update()
+        if self.game.state==GameState.CreateGame:
+            self.popUp.update()
+        if self.game.state==GameState.JoinGame:
+            self.popUp.update()
 
     def event_handler(self,event):
-        for b in self.buttons:
-            self.buttons[b].hover(event)
-        self.inputBox.event_handler(event)
-        if event.type == pygame.KEYDOWN:
-            if self.inputBox.active:
+        if self.game.state== GameState.MENU:
+            for b in self.buttons:
+                self.buttons[b].hover(event)
+            self.inputBox.event_handler(event)
+            if event.type == pygame.KEYDOWN:
+                if self.inputBox.active:
+                    if event.key == pygame.K_RETURN:
+                        self.server.send('username|update|' + self.inputBox.text)
+        elif self.game.state== GameState.CreateGame:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    self.server.send('username|update|' + self.inputBox.text)
-                
+                    self.game.state=GameState.MENU
+                    print(self.game.state)
+        elif self.game.state== GameState.JoinGame:
+            self.popUp.event_handler(event)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.game.state=GameState.MENU
+                    print(self.game.state)
         
 class Chat(object):
     def __init__(self,game):
