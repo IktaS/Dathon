@@ -37,6 +37,9 @@ class Match:
 
 
     def move(self, client, i: int):
+        print(client)
+        print(self.current_player)
+        # print(self.board)
         if client != self.current_player:
             return
 
@@ -102,6 +105,7 @@ class Match:
         for i in range(7):
             if self.board[client][i] > 0:
                 self.current_player = client
+                print("somemting")
                 return
 
     def getOther_client(self, client):
@@ -111,10 +115,7 @@ class Match:
             return self.player1
 
     def check_endgame(self):
-        biji = self.board1
-        biji += self.board2
-
-        if (self.board1 + self.board2) == 98:
+        if (self.board[self.player1][7] + self.board[self.player2][7]) == 98:
             return True
         else:
             return False
@@ -145,6 +146,7 @@ class MatchHandler:
         self.match = match
 
     def handle(self, client: Client, command: str):
+        print(command)
         command = command.rstrip()
         params = command.split("|")
 

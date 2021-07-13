@@ -233,7 +233,7 @@ class Board(object):
             SeedHole(40,708,343),
             SeedHole(40,806,343),
             # Score
-            SeedHole(50,95,410,0),
+            SeedHole(50,925,410,0),
         ]
         self.myBox=[
             ValueBox(806,620),
@@ -247,10 +247,10 @@ class Board(object):
         ]
         self.enemyBox=[
             ValueBox(218,198),
-            ValueBox(610,198),
             ValueBox(316,198),
             ValueBox(414,198),
             ValueBox(512,198),
+            ValueBox(610,198),
             ValueBox(708,198),
             ValueBox(806,198),
             ScoreBox(0,1215,64,10),
@@ -260,6 +260,7 @@ class Board(object):
             "player" : TextStatic(self.font,game.menu.inputBox.text,CLR_Black,72,875),
             "enemy" : TextStatic(self.font,"Musuh",CLR_Black,1244,157)
         }
+        self.turn=TextStatic(self.font,"Turn :",CLR_Black,0,0)
 
     def draw(self,screen):
         screen.blit(self.board, (42,290))
@@ -271,6 +272,7 @@ class Board(object):
         for i in self.textName:
             self.textName[i].draw(screen)
         self.chat.draw(screen)
+        self.turn.draw(screen)
     def update(self):
         for i in range(8):
             self.myBoard[i].update()
@@ -278,6 +280,7 @@ class Board(object):
             self.myBox[i].update()
             self.enemyBox[i].update()
         self.chat.update()
+        self.turn.update()
 
     def updateName(self):
         for i in self.textName:

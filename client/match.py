@@ -38,7 +38,7 @@ class Match:
                     # jika di cekungan sendiri kosong ambil seberang musuh
                     else:
                         self.board.myBoard[7].value += self.board.enemyBoard[6-i].value
-                        self.board.myBox[7].value = self.board.myBoard[6].value
+                        self.board.myBox[7].value = self.board.myBoard[7].value
                         self.board.enemyBoard[6-i].value = 0
                         self.board.enemyBoard[6-i].value = 0
                         # draw here
@@ -51,7 +51,7 @@ class Match:
             i = 0
             while biji:
                 self.board.enemyBoard[i].value += 1
-                self.board.enemyBoard[i].value += 1
+                self.board.enemyBox[i].value += 1
                 biji -= 1
 
                 # draw here
@@ -73,7 +73,7 @@ class Match:
 
     def enemymove(self,i):
         
-        biji = self.board.Board[i].value
+        biji = self.board.enemyBoard[i].value
         self.board.enemyBoard[i].value = 0
         self.board.enemyBox[i].value = 0
         # draw here
@@ -100,7 +100,7 @@ class Match:
                     # jika di cekungan sendiri kosong ambil seberang musuh
                     else:
                         self.board.enemyBoard[7].value += self.board.myBoard[6-i].value
-                        self.board.enemyBox[7].value = self.board.enemyBoard[6].value
+                        self.board.enemyBox[7].value = self.board.enemyBoard[7].value
                         self.board.myBoard[6-i].value = 0
                         self.board.myBoard[6-i].value = 0
                         # draw here
@@ -113,7 +113,7 @@ class Match:
             i = 0
             while biji:
                 self.board.myBoard[i].value += 1
-                self.board.myBoard[i].value += 1
+                self.board.myBox[i].value += 1
                 biji -= 1
 
                 # draw here
@@ -135,9 +135,10 @@ class Match:
     def checkturn(self):
         for i in range(7):
             if self.board.enemyBoard[i].value > 0:
+                self.game.board.turn.text="Enemy Turn"
                 self.myturn = False
                 return
-
+        # self.myturn=True
     # def check_endgame(self):
     #     biji = 0
     #     for c in self.clients:
