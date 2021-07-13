@@ -243,7 +243,7 @@ class Board(object):
             ValueBox(414,620),
             ValueBox(316,620),
             ValueBox(218,620),
-            ScoreBox(0,1215,64,10),
+            ScoreBox(0,42,927,10),
         ]
         self.enemyBox=[
             ValueBox(218,198),
@@ -253,7 +253,7 @@ class Board(object):
             ValueBox(512,198),
             ValueBox(708,198),
             ValueBox(806,198),
-            ScoreBox(0,42,927,10),
+            ScoreBox(0,1215,64,10),
         ]
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),40)
         self.textName={
