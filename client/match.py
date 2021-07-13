@@ -40,7 +40,7 @@ class Match:
                         self.board.myBoard[7].value += self.board.enemyBoard[6-i].value
                         self.board.myBox[7].value = self.board.myBoard[7].value
                         self.board.enemyBoard[6-i].value = 0
-                        self.board.enemyBoard[6-i].value = 0
+                        self.board.enemyBox[6-i].value = 0
                         # draw here
                         
             if biji > 0:
@@ -102,7 +102,7 @@ class Match:
                         self.board.enemyBoard[7].value += self.board.myBoard[6-i].value
                         self.board.enemyBox[7].value = self.board.enemyBoard[7].value
                         self.board.myBoard[6-i].value = 0
-                        self.board.myBoard[6-i].value = 0
+                        self.board.myBox[6-i].value = 0
                         # draw here
                         
             if biji > 0:

@@ -152,6 +152,7 @@ class Menu():
         elif self.game.state== GameState.CreateGame:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
+                    self.server.send("exit")
                     self.game.state=GameState.MENU
                     # print(self.game.state)
         elif self.game.state== GameState.JoinGame:
