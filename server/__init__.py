@@ -4,3 +4,4 @@ from clients import Client
 from room import Room
 from room import RoomFactory
 from room import UIDGenerator
+from match import Match

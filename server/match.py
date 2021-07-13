@@ -4,145 +4,146 @@ import random
 from clients import *
 
 
-def code_generator():
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+class Match:
+    def __init__(self, server, player1, player2):
+        self.server = server
+        self.player1 = player1
+        self.player2 = player2
 
+        self.board = {
+            self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
+            self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
+        }
 
-class RoomFactory:
-    def __init__(self):
-        self.currentID = 0
-
-    def create_room(self, client):
-        self.currentID += 1
-        return Room(self.currentID, code_generator(), client)
-
-
-class Room:
-    def __init__(self, id, room_code, client):
-        self.id = id
-        self.room_code = room_code
-        self.clients = [client]
-        self.board = {}
-        print(self.id, self.room_code)
-
-    def start_game(self):
-        self.broadcast('room|' + self.id + '|start')
+        self.broadcast('match|start')
         self.first_move()
 
-        for c in self.clients:
-            # board is reverse this way --> for the player perspective
-            self.board[c] = [7, 7, 7, 7, 7, 7, 7, 0]
+        handler = MatchHandler(self)
+        self.player1.setCommandHandler(handler)
+        self.player2.setCommandHandler(handler)
+        
 
     def first_move(self):
-        self.current_player = random.choice(self.clients)
-        self.sendOther('room|move|other', self.current_player)
-        self.sendMe('room|move|you', self.current_player)
+        if bool(random.getrandbits(1)):
+            self.current_player = self.player1
+            self.player2.sendEncode('match|move|other')
+        else:
+            self.current_player = self.player2
+            self.player1.sendEncode('match|move|other')
 
-    def move(self, client, index):
+        self.current_player.sendEncode('match|move|you')
+
+    def move(self, client, i: int):
         if client != self.current_player:
             return
 
-        biji = self.board[client][index]
-        self.board[client][index] = 0
-
         other_client = self.getOther_client(client)
-        self.sendMe('room|move|' + index, other_client)
+        other_client.sendEncode('match|move|' + i)
+
+        biji = self.board[client][i]
+        self.board[client][i] = 0
 
         while biji:
-            i = index + 1
             while biji:
+                i += 1
+                if i == 7:
+                    break
+
                 self.board[client][i] += 1
                 biji -= 1
+
                 if biji == 0:
                     if self.board[client][i] > 1:
                         biji = self.board[client][i]
                         self.board[client][i] = 0
                     else:
-                        self.board[other_client][7] = self.board[client][6-i]
-                        self.board[client][6-i] = 0
-                i += 1
-                if i == 8:
-                    break
+                        self.board[client][7] += self.board[other_client][6-i]
+                        self.board[other_client][6-i] = 0
+
+            if biji > 0:
+                self.board[client][7] += 1
+                biji -= 1
 
             i = 0
             while biji:
                 self.board[other_client][i] += 1
                 biji -= 1
+
                 if biji == 0:
                     if self.board[other_client][i] > 1:
                         biji = self.board[other_client][i]
-                        self.board[client][i] = 0
+                        self.board[other_client][i] = 0
+
                 i += 1
                 if i == 7:
                     break
+            i = 0
 
         if (self.check_endgame()):
-            return
-            # Do something
+            self.server.saveScore(score, username)
+            self.server.saveScore(score, username)
+
+            self.server.saveScore(
+                self.board[player1][7], self.player1.username)
+            self.server.saveScore(
+                self.board[player2][7], self.player2.username)
         else:
             self.checkturn(other_client)
 
-    def checkturn(self, other_client):
-        biji = 0
+    def checkturn(self, client):
         for i in range(7):
-            biji += self.board[other_client][i]
-        if biji > 0:
-            self.current_player(other_client)
-
-    def chat(self, message, client):
-        print('room|chat|' + client.username + '|' + message, client)
-        self.sendOther('room|chat|' + client.username + '|' + message, client)
+            if self.board[client][i] > 0:
+                self.current_player = client
+                return
 
     def getOther_client(self, client):
-        for c in self.clients:
-            if c != client:
-                return c
+        if client == self.player1:
+            return self.player2
+        else:
+            return self.player1
 
     def check_endgame(self):
-        biji = 0
-        for c in self.clients:
-            biji += self.board[c][7]
+        biji = self.board1
+        biji += self.board2
 
-        if biji == 98:
-            self.endgame()
+        if (self.board1 + self.board2) == 98:
+            # self.checkResult()
             return True
         else:
             return False
 
-    def endgame(self):
-        if self.board[self.clients[0]][7] > self.board[self.clients[1]][7]:
-            self.sendOther('room|end|lose', self.clients[0])
-            self.sendMe('room|end|win', self.clients[0])
-        elif self.board[self.clients[0]][7] < self.board[self.clients[1]][7]:
-            self.sendOther('room|end|lose', self.clients[1])
-            self.sendMe('room|end|win', self.clients[1])
-        else:
-            self.broadcast('room|end|draw')
+    # def checkResult(self):
+    #     if self.board1 > self.board2:
+    #         self.player1.sendEncode('match|end|win')
+    #         self.player2.sendEncode('match|end|lose')
+    #     elif self.board1 > self.board2:
+    #         self.player1.sendEncode('match|end|win')
+    #         self.player2.sendEncode('match|end|lose')
+    #     else:
+    #         self.broadcast('match|end|draw')
 
     def broadcast(self, message):
-        for c in self.clients:
-            c.sendEncode(message)
+        self.player1.sendEncode(message)
+        self.player2.sendEncode(message)
 
-    def sendOther(self, message, client):
-        for c in self.clients:
-            if c != client:
-                c.sendEncode(message)
+    def chat(self, client, message):
+        if client == self.player1:
+            self.player2.sendEncode('chat|' + client.username + '|' + message)
+        else:
+            self.player1.sendEncode('chat|' + client.username + '|' + message)
 
-    def sendMe(self, message, client):
-        client.sendEncode(message)
 
-    def add_client(self, client):
-        self.broadcast("room|" + client.username + " has join")
-        self.clients.append(client)
-        # if len(self.clients) > 1:
-        #     self.start_game()
+class MatchHandler:
+    def __init__(self, match):
+        self.match = match
 
-    def remove_client(self, client):
-        if client in self.clients:
-            self.clients.remove(client)
+    def handle(self, client: Client, command: str):
+        command = command.rstrip()
+        params = command.split("|")
 
-    def check_client(self, client):
-        for c in self.clients:
-            if c == client:
-                return True
-        return False
+        if params[0] == 'match':
+            if params[1] == 'move':
+                self.match.move(client, int(params[2]))
+
+        elif params[0] == 'chat':
+            self.match.chat(command, params[1])
