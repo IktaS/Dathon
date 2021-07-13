@@ -2,7 +2,6 @@ import string
 import random
 
 from clients import *
-from server import *
 
 
 class Match:
@@ -19,7 +18,10 @@ class Match:
         self.broadcast('match|start')
         self.first_move()
 
-        self.matchHandler = MatchHandler(self)
+        handler = MatchHandler(self)
+        self.player1.setCommandHandler(handler)
+        self.player2.setCommandHandler(handler)
+        
 
     def first_move(self):
         if bool(random.getrandbits(1)):

@@ -1,5 +1,5 @@
 import configparser
-from typing import Match
+from match import Match
 from clients import Client, ClientFactory, ClientNumberIDGenerator
 from room import UIDGenerator, Room, RoomFactory
 import socket

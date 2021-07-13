@@ -16,6 +16,7 @@ class GameState(Enum):
     HS=4
     CreateGame = 5
     JoinGame = 6
+    Matchmake = 7
 
 # is_running=True
 class Game():
@@ -28,7 +29,7 @@ class Game():
         pygame.display.set_caption(self.title)
         self.screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
         self.clock = pygame.time.Clock()
-        self.server = Server()
+        self.server = Server(self)
         self.menu= Menu(self)
         self.board= Board(self)
         self.htp= HowToPlay(self)
@@ -47,6 +48,7 @@ class Game():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         print("ko"+str(self.state))
                         if self.menu.buttons["cgame"].bg_rect.collidepoint(event.pos) and self.state==self.prevsstate:
+                            self.server.send('private|make')
                             self.prevsstate=self.state
                             self.state=GameState.CreateGame
                             # self.board.updateName()
@@ -59,6 +61,10 @@ class Game():
                         elif self.menu.trophy_rect.collidepoint(event.pos) and self.state==self.prevsstate:
                             self.prevsstate=self.state
                             self.state=GameState.HS
+                        elif self.menu.buttons["matchmake"].bg_rect.collidepoint(event.pos):
+                            self.state=GameState.Matchmake
+                            self.server.send('matchmake|join')
+                        
                     self.menu.event_handler(event)
                 elif(self.state==GameState.INGAME):
                     self.board.event_handler(event)

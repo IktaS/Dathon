@@ -14,6 +14,7 @@ class Match:
         self.enemyScoreHole = enemyScoreHole
         self.scoreBox = scoreBox
         self.clock = pygame.time.Clock()
+        self.turn = False
 
     def timer(self):
         timer = 1
@@ -57,6 +58,8 @@ class Match:
         self.scoreBox[1].draw()
     
     def move(self,i):
+        if self.turn == False:
+            return
         
         biji = self.playerHole[i].value
         self.playerHole[i].value = 0
@@ -68,7 +71,7 @@ class Match:
                 i += 1
                 if i == 7:
                     break
-                print("p"+str(i)+"--"+str(self.playerHole[i].value)+"--"+str(biji))
+                # print("p"+str(i)+"--"+str(self.playerHole[i].value)+"--"+str(biji))
 
                 self.playerHole[i].value += 1
                 self.playerBox[i].value += 1
@@ -107,11 +110,7 @@ class Match:
 
             i = 0
             while biji:
-                i += 1
-                if i == 7:
-                    break
-
-                print("e"+str(i)+"--"+str(self.enemyHole[i].value)+"--"+str(biji))
+                # print("e"+str(i)+"--"+str(self.enemyHole[i].value)+"--"+str(biji))
                 self.enemyHole[i].value += 1
                 self.enemyBox[i].value += 1
                 biji -= 1
@@ -126,15 +125,13 @@ class Match:
                         
                         self.drawEnemy(i)
                 # self.clock.tick(1)
+                i += 1
+                if i == 7:
+                    break
             i = 0
             # self.clock.tick(1)
 
-
-        # if ( self.check_endgame()):
-        #     return
-        #     # Do something
-        # else:
-        #     self.checkturn(other_client)
+        self.turn = False
 
     # def checkturn(self, other_client):
     #     biji = 0

@@ -1,7 +1,8 @@
 import json
 import random
 from clients import Client
-from typing import List, Match
+from typing import List
+from match import Match
 import string
 
 
