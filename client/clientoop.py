@@ -39,6 +39,9 @@ class Game():
         self.board = Board(self)
         self.match = Match(self)
         self.state = GameState.INGAME
+
+    def toMenu(self):
+        self.state = GameState.MENU
         
     def run(self):
         self.screen.fill(CLR_Parchment)

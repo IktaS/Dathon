@@ -55,7 +55,10 @@ class SeedHole():
         
     def event_handler(self,event):
         if event.type == pygame.MOUSEMOTION:
-            self.hovered= self.iscollide(event.pos)
+            if self.value > 0:
+                self.hovered= self.iscollide(event.pos)
+            else:
+                self.hovered= False
         # if event.type == pygame.MOUSEBUTTONDOWN and self.hovered:
         #     self.value+=1
 

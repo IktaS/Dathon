@@ -27,21 +27,18 @@ class Match:
 
     def startgame(self):
         print('match|start')
-        self.broadcast('match|start')
 
         if bool(random.getrandbits(1)):
             self.current_player = self.player1
-            self.player2.sendEncode('match|other|' + self.player1.username)
-            self.player1.sendEncode('match|you|' + self.player2.username)
+            self.player2.sendEncode('match|start|other|' + self.player1.username)
+            self.player1.sendEncode('match|start|you|' + self.player2.username)
         else:
             self.current_player = self.player2
-            self.player1.sendEncode('match|other|' + self.player2.username)
-            self.player2.sendEncode('match|you|' + self.player1.username)
+            self.player1.sendEncode('match|start|other|' + self.player2.username)
+            self.player2.sendEncode('match|start|you|' + self.player1.username)
 
 
     def move(self, client, i: int):
-        print(client)
-        print(self.current_player)
         # print(self.board)
         if client != self.current_player:
             return

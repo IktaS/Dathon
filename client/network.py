@@ -63,30 +63,33 @@ class Server:
         # scoreboard in json
         # scoreboard in json
 
-        # elif params[0] == "room":
-        #     print(cmd)
+        elif params[0] == "room":
+            if params[2] == "join":
+                self.send("start")
+
         elif params[0] == "private":
             if params[1] == "failed":
-                pass
+                self.game.toMenu()
             else:
                 self.game.menu.popUp.text = params[1]
     
         elif params[0] == "match":
             if params[1] == "start":
                 self.game.initMatch()
+                if params[2] == "other":
+                    self.game.match.myturn = False
+                    self.game.board.turn.text="Enemy Turn"
+                    self.game.board.textName["enemy"].text = params[3]
+                    self.game.board.updateName()
+                elif params[2] == "you":
+                    self.game.match.myturn = True
+                    self.game.board.turn.text="Your Turn"
+                    self.game.board.textName["enemy"].text = params[3]
+                    self.game.board.updateName()
+
             elif params[1] == "move":
                 self.game.match.enemymove(int(params[2]))
 
-            elif params[1] == "other":
-                self.game.match.myturn = False
-                self.game.board.turn.text="Enemy Turn"
-                self.game.board.textName["enemy"].text = params[2]
-                self.game.board.updateName()
-            elif params[1] == "you":
-                self.game.match.myturn = True
-                self.game.board.turn.text="Your Turn"
-                self.game.board.textName["enemy"].text = params[2]
-                self.game.board.updateName()
 
             elif params[1] == "end":
                 if params[2] == "win":
@@ -95,6 +98,9 @@ class Server:
                     pass
                 elif params[2] == "draw":
                     pass
+
+                self.send("exit")
+                self.game.toMenu()
                 
 
 # try:

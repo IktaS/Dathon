@@ -82,7 +82,7 @@ class Room:
             return False
         self.locked = True
         # TODO: implement match
-        match = Match(self.server, self.master, self.clients[0])
+        match = Match(self.server, self.master, self.clients[1])
 
     def broadcastMessageEncode(self, message: str, exception: Client = None):
         if not len(self.clients):
