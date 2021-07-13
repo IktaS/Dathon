@@ -12,6 +12,9 @@ class Match:
         self.board = {
             self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
             self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
+            # self.player1: [0, 0, 0, 0, 0, 0, 1, 96],
+            # self.player2: [0, 0, 0, 0, 0, 0, 1, 0]
+
         }
 
         handler = MatchHandler(self)
@@ -92,20 +95,23 @@ class Match:
 
     def endgame(self):
         self.checkResult()
-        self.server.saveScore(score, username)
-        self.server.saveScore(score, username)
 
-        self.server.saveScore( self.board[player1][7], self.player1.username)
-        self.server.saveScore( self.board[player2][7], self.player2.username)
+        # self.server.saveScore( self.board[player1][7], self.player1.username)
+        # self.server.saveScore( self.board[player2][7], self.player2.username)
 
         self.player1.setCommandHandler( self.previusPlayer1Handler)
         self.player2.setCommandHandler( self.previusPlayer2Handler)
+
+    def check_endgame(self):
+        if (self.board[self.player1][7] + self.board[self.player2][7]) == 98:
+            return True
+        else:
+            return False
 
     def checkturn(self, client):
         for i in range(7):
             if self.board[client][i] > 0:
                 self.current_player = client
-                print("somemting")
                 return
 
     def getOther_client(self, client):
@@ -114,17 +120,13 @@ class Match:
         else:
             return self.player1
 
-    def check_endgame(self):
-        if (self.board[self.player1][7] + self.board[self.player2][7]) == 98:
-            return True
-        else:
-            return False
-
     def checkResult(self):
-        if self.board1 > self.board2:
+        if self.board[self.player1][7] > self.board[self.player2][7]:
+            print('player1 Win')
             self.player1.sendEncode('match|end|win')
             self.player2.sendEncode('match|end|lose')
-        elif self.board1 > self.board2:
+        elif self.board[self.player1][7] < self.board[self.player2][7]:
+            print('player2 Win')
             self.player1.sendEncode('match|end|win')
             self.player2.sendEncode('match|end|lose')
         else:

@@ -75,8 +75,6 @@ class Server:
             if params[1] == "start":
                 self.game.initMatch()
             elif params[1] == "move":
-                self.game.match.myturn = True
-                self.game.board.turn.text="Your Turn"
                 self.game.match.enemymove(int(params[2]))
 
             elif params[1] == "other":
@@ -89,6 +87,14 @@ class Server:
                 self.game.board.turn.text="Your Turn"
                 self.game.board.textName["enemy"].text = params[2]
                 self.game.board.updateName()
+
+            elif params[1] == "end":
+                if params[2] == "win":
+                    pass
+                elif params[2] == "lose":
+                    pass
+                elif params[2] == "draw":
+                    pass
                 
 
 # try:
