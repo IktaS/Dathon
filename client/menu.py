@@ -1,6 +1,15 @@
 import sys
 import pygame
 import os
+from enum import Enum
+# from clientoop import GameState
+class GameState(Enum):
+    MENU = 1
+    INGAME = 2
+    HTP = 3
+    HS=4
+    CreateGame = 5
+    JoinGame = 6
 class Button():
     def __init__(self,font,text,text_def_color,text_act_color,bg_def_color,bg_act_color,rect_w,rect_h,rect_x,rect_y,border,edge):
         self.font = font
@@ -88,6 +97,36 @@ class TextButton():
             self.hovered= self.rect.collidepoint(event.pos)
 
 class PopUpMenu():
+    def __init__(self,game):
+        self.game=game
+        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
+        self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
+        self.sf_text1=self.font.render("This is your code", True, (0,0,0))
+        self.sf_text2=self.font_code.render("ABCDEF", True, (255,255,255))
+        self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
+        
+        self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
+        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
+        self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
+        self.sf_text3_rect = self.sf_text3.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+259)
+        self.inputed=False
+        
+        
+    def draw(self,screen):
+        pygame.draw.rect(screen, (207, 166, 124,255), self.bg_rect, 0,20)
+        screen.blit(self.sf_text1, self.sf_text1_rect)
+        screen.blit(self.sf_text2, self.sf_text2_rect)
+        screen.blit(self.sf_text3, self.sf_text3_rect)
+    def update(self):
+        pass
+        
+    def event_handler(self,event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                # pass
+                self.game.state=GameState.MENU
+                print(self.game.state)
+class PopUpInput():
     def __init__(self):
         self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
         self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
