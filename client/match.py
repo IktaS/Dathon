@@ -36,15 +36,15 @@ class Match:
                         
                     # jika di cekungan sendiri kosong ambil seberang musuh
                     else:
-                        self.board.myBoard[6].value += self.board.enemyBoard[6-i].value
-                        self.board.myBox[6].value = self.board.myBoard[6].value
+                        self.board.myBoard[7].value += self.board.enemyBoard[6-i].value
+                        self.board.myBox[7].value = self.board.myBoard[6].value
                         self.board.enemyBoard[6-i].value = 0
                         self.board.enemyBoard[6-i].value = 0
                         # draw here
                         
             if biji > 0:
-                self.board.myBoard[i].value += 1
-                self.board.myBox[i].value += 1
+                self.board.myBoard[7].value += 1
+                self.board.myBox[7].value += 1
                 biji -= 1
 
             i = 0
