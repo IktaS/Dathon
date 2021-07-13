@@ -58,8 +58,8 @@ class Match:
         self.scoreBox[1].draw()
     
     def move(self,i):
-        if self.turn == False:
-            return
+        # if self.turn == False:
+            # return
         
         biji = self.playerHole[i].value
         self.playerHole[i].value = 0

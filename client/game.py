@@ -126,7 +126,7 @@ class ScoreBox():
     def draw(self,screen):
         pygame.draw.rect(screen,self.normal_color, self.outer_rect,self.outer_border_width,self.edge)
         screen.blit(self.image,self.text_rect)
-   
+
     def event_handler(self,event):
         if event.type == pygame.MOUSEMOTION:
             self.hovered= self.outer_rect.collidepoint(event.pos)
