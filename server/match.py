@@ -119,11 +119,9 @@ class Match:
 
     def checkResult(self):
         if self.board[self.player1][7] > self.board[self.player2][7]:
-            print('player1 Win')
             self.player1.sendEncode('match|end|win')
             self.player2.sendEncode('match|end|lose')
         elif self.board[self.player1][7] < self.board[self.player2][7]:
-            print('player2 Win')
             self.player1.sendEncode('match|end|win')
             self.player2.sendEncode('match|end|lose')
         else:
@@ -157,3 +155,8 @@ class MatchHandler:
 
         elif params[0] == 'chat':
             self.match.chat(client, params[1])
+
+        elif params[0] == "terminated":
+            other_client = self.match.getOther_client(client)
+            client.stop()
+            other_client.sendEncode('match|end|win')

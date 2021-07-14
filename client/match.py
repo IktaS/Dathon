@@ -1,5 +1,3 @@
-from client import *
-
 class Match:
     def __init__(self, game):
         self.game = game

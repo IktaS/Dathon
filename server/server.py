@@ -153,6 +153,9 @@ class Server:
                     c2 = self.server.queue.get()
                     match = Match(self.server, c1, c2)
 
+            elif params[0] == "terminated":
+                client.stop()
+
 
 clientFactory = ClientFactory(ClientNumberIDGenerator())
 roomFactory = RoomFactory(UIDGenerator(6))

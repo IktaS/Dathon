@@ -5,6 +5,7 @@ import os
 import array as arr
 from threading import Thread
 from menu import *
+from game import *
 from game_constant import *
 from match import *
 from network import Server
@@ -47,7 +48,7 @@ class Game():
         self.screen.fill(CLR_Parchment)
         is_running=True
         while is_running:
-            screen.fill(CLR_Parchment)
+            self.screen.fill(CLR_Parchment)
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -94,7 +95,7 @@ class Game():
                 self.hs.update()
                 self.hs.draw(self.screen)
             pygame.display.flip()
-            clock.tick(30)
+            self.clock.tick(30)
         pygame.quit()
 
 class Menu():
