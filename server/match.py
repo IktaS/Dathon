@@ -145,7 +145,7 @@ class MatchHandler:
         self.match = match
 
     def handle(self, client: Client, command: str):
-        print(command)
+        print("matchHandler|" + command)
         command = command.rstrip()
         params = command.split("|")
 
@@ -156,7 +156,8 @@ class MatchHandler:
         elif params[0] == 'chat':
             self.match.chat(client, params[1])
 
-        elif params[0] == "terminated":
+        elif params[0] == "terminate":
             other_client = self.match.getOther_client(client)
-            client.stop()
             other_client.sendEncode('match|end|win')
+            other_client.setCommandHandler( self.match.previusPlayer1Handler)
+            client.stop()

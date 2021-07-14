@@ -31,9 +31,9 @@ class Server:
         Thread(target=self.recv_thread, args=()).start()
 
     def stop(self):
-        self.running = False
         self.send("terminate")
-        self.socket.close()
+        self.running = False
+        self.sock.close()
 
     def send(self, command: str):
     # def send(self):
