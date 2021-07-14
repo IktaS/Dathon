@@ -43,16 +43,20 @@ class Game():
 
     def toMenu(self):
         self.state = GameState.MENU
+
+    def stop(self):
+        self.server.stop()
+        self.is_running=False
         
     def run(self):
         self.screen.fill(CLR_Parchment)
-        is_running=True
-        while is_running:
+        self.is_running=True
+        while self.is_running:
             self.screen.fill(CLR_Parchment)
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    is_running=False
+                    self.stop()                    
                 if self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         # print("ko"+str(self.state))
@@ -412,5 +416,5 @@ try:
     game = Game()
     game.run()
 except KeyboardInterrupt:
-    game.server.stop()
+    game.stop()
     sys.exit(0)
