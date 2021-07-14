@@ -134,7 +134,9 @@ class Match:
         self.player2.sendEncode(message)
 
     def chat(self, client, message):
+        
         if client == self.player1:
+            print("p1")
             self.player2.sendEncode('chat|' + client.username + '|' + message)
         else:
             self.player1.sendEncode('chat|' + client.username + '|' + message)
@@ -154,4 +156,4 @@ class MatchHandler:
                 self.match.move(client, int(params[2]))
 
         elif params[0] == 'chat':
-            self.match.chat(command, params[1])
+            self.match.chat(client, params[1])

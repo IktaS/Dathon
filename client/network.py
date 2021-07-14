@@ -42,7 +42,7 @@ class Server:
             self.sock.send(data)
 
     def recv_thread(self):
-        self.sock.settimeout(2)
+        # self.sock.settimeout(2)
         while self.running:
             data = self.sock.recv(BUFFER_SIZE)
             self.handle( data.decode() )
@@ -79,7 +79,8 @@ class Server:
                 self.game.menu.popUp.text = params[1]
 
         elif params[0] == "chat":
-            pass
+            # pass
+            self.game.board.chat.updateChat(params[1],params[2])
     
         elif params[0] == "match":
             if params[1] == "start":
