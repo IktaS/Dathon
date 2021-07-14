@@ -162,6 +162,7 @@ s = Server('localhost', 8081, sys.stdout,
 
 try:
     s.start_server()
+    input()
 except KeyboardInterrupt:
     s.stop_server()
     sys.exit(0)

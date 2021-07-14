@@ -383,7 +383,9 @@ class HighestScore(object):
         
                     
 
-
-
-game = Game()
-game.run()
+try:
+    game = Game()
+    game.run()
+except KeyboardInterrupt:
+    game.server.stop()
+    sys.exit(0)

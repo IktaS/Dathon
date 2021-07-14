@@ -26,8 +26,13 @@ class Server:
         self.run()
 
     def run(self):
+        self.running = True
         # Thread(target=self.send, args=()).start()
         Thread(target=self.recv_thread, args=()).start()
+
+    def stop(self):
+        self.running = False
+        self.socket.close()
 
     def send(self, command: str):
     # def send(self):
@@ -37,7 +42,8 @@ class Server:
             self.sock.send(data)
 
     def recv_thread(self):
-        while True:
+        self.sock.settimeout(2)
+        while self.running:
             data = self.sock.recv(BUFFER_SIZE)
             self.handle( data.decode() )
 
@@ -61,7 +67,6 @@ class Server:
                 print("invalid request")
 
         # scoreboard in json
-        # scoreboard in json
 
         elif params[0] == "room":
             if params[2] == "join":
@@ -72,6 +77,9 @@ class Server:
                 self.game.toMenu()
             else:
                 self.game.menu.popUp.text = params[1]
+
+        elif params[0] == "chat":
+            pass
     
         elif params[0] == "match":
             if params[1] == "start":
@@ -89,7 +97,6 @@ class Server:
 
             elif params[1] == "move":
                 self.game.match.enemymove(int(params[2]))
-
 
             elif params[1] == "end":
                 if params[2] == "win":
