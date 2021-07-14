@@ -154,29 +154,46 @@ class PopUpInput():
         screen.blit(self.sf_text3, self.sf_text3_rect)
         screen.blit(self.txt_surface, self.text_rect)
         pygame.draw.rect(screen, self.color, self.rect, 2,20)
+
     def update(self):
-        pass
+        if self.active==False and self.text=="" and len(self.text)==0:
+            self.display = "Enter Code..."
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+        elif self.text=="" and len(self.text)==0:
+            self.display = "|"
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+            # print("kosong")
+        else:
+            self.display = self.text[-self.text_limit:]
+        self.txt_surface = self.font.render(self.display, True, self.color)
     
     def event_handler(self,event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
+            if self.rect.collidepoint(event.pos) or self.rect.collidepoint(event.pos):
                 self.active = not self.active
             else:
                 self.active = False
-            self.color = self.color if self.color_active else self.color_inactive
+            if self.active:
+                self.color = self.color_active
+            else:
+                self.color = self.color_inactive
         if event.type == pygame.KEYDOWN:
-            if len(self.text) < 6:
-                # pass
-                if self.active:
-                    if event.key == pygame.K_BACKSPACE:
-                        self.text = self.text[:-1]
-                        self.display = self.text[-self.text_limit:]
-                    else:
-                        self.text += event.unicode
-                        self.display = self.text[-self.text_limit:]
-                    self.txt_surface = self.font.render(self.display, True, self.color)       
-                    self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
-                    self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    self.active=False
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                    self.display = self.text[-self.text_limit:]
+                elif len(self.text)<=6 :
+                    self.text += event.unicode
+                    self.display = self.text[-self.text_limit:]
+                self.txt_surface = self.font.render(self.display, True, self.color)       
+                self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+                self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
 
 class InputBox:
     def __init__(self, font, x, y, w, h,color,active_color, text=''):
@@ -185,7 +202,7 @@ class InputBox:
         self.color_active = active_color
         self.color=self.color_inactive
         self.text = text
-        self.text_limit=15
+        self.text_limit=10
         self.display = "Enter name..."
         self.txt_surface = self.font.render(self.display, True, self.color)
         self.rect=self.txt_surface.get_rect(width=w,height=h,x=x,y=y)
@@ -194,19 +211,24 @@ class InputBox:
 
     def event_handler(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
+            if self.rect.collidepoint(event.pos) or self.text_rect.collidepoint(event.pos):
                 self.active = not self.active
             else:
                 self.active = False
-            self.color = self.color if self.color_active else self.color_inactive
+            if self.active:
+                self.color = self.color_active
+            else:
+                self.color = self.color_inactive
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
+                    # self.active=False
                     print(self.text)
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                     self.display = self.text[-self.text_limit:]
-                else:
+                elif len(self.text)<=10 :
+                    # print(event.unicode)
                     self.text += event.unicode
                     self.display = self.text[-self.text_limit:]
                 self.txt_surface = self.font.render(self.display, True, self.color)       
@@ -214,7 +236,20 @@ class InputBox:
                 self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
 
     def update(self):
-        self.display = self.text[-self.text_limit:]
+        if self.active==False and self.text=="" and len(self.text)==0:
+            self.display = "Enter name..."
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+        elif self.text=="" and len(self.text)==0:
+            self.display = "|"
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+            # print("kosong")
+        else:
+            self.display = self.text[-self.text_limit:]
+        self.txt_surface = self.font.render(self.display, True, self.color)
     
     def draw(self,screen):
         screen.blit(self.txt_surface, self.text_rect)

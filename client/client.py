@@ -114,7 +114,7 @@ class Menu():
             'matchmake' : Button(self.font['text'],"Matchmaking",CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,726,MENU_BTN_BORDER,MENU_BTN_EDGE),
             'htp' : TextButton(self.font['text'],"How to Play",CLR_Tan,600,867,CLR_Paarl)
         }
-        self.inputBox=InputBox(self.font['text'],470,288,500, 100, CLR_Black,CLR_White,str(self.server.id))
+        self.inputBox=InputBox(self.font['text'],470,288,500, 100, CLR_Black,CLR_Tan,"")
         self.title=TextStatic(self.font['title'],"Dathon",CLR_Paarl,553,87)
         self.popUp= PopUpMenu(self.game)
         self.popUpJoin= PopUpInput(self.game)
@@ -153,6 +153,9 @@ class Menu():
                 if self.inputBox.active:
                     if event.key == pygame.K_RETURN:
                         self.server.send('username|update|' + self.inputBox.text)
+                        self.inputBox.active=False
+                        self.inputBox.update()
+                        self.inputBox.draw(self.game.screen)
         elif self.game.state== GameState.CreateGame:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
@@ -214,6 +217,8 @@ class Chat(object):
                         "name":TextStatic(self.font['nama'],self.game.menu.inputBox.text,CLR_Black,1067,854),
                         "text":TextStatic(self.font['chat'],self.chatInputBox.text,CLR_White,1200,854),
                     }
+                    if self.game.menu.inputBox.text=="":
+                        dict["name"]=TextStatic(self.font['nama'],self.game.server.id,CLR_Black,1067,854)  
                     self.game.server.send('chat|'+self.chatInputBox.text)
                     self.staticText.append(dict)
                     self.chatInputBox.text=""
@@ -272,9 +277,11 @@ class Board(object):
         ]
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),40)
         self.textName={
-            "player" : TextStatic(self.font,game.menu.inputBox.text,CLR_Black,72,875),
+            "player" : TextStatic(self.font,str(self.game.menu.inputBox.text),CLR_Black,72,875),
             "enemy" : TextStatic(self.font,"Musuh",CLR_Black,1244,157)
         }
+        if self.game.menu.inputBox.text=="" :
+            self.textName["player"] = TextStatic(self.font,str(self.game.server.id),CLR_Black,72,875)
         self.turn=TextStatic(self.font,"Turn :",CLR_Black,0,0)
 
     def draw(self,screen):
