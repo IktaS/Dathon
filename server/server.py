@@ -136,7 +136,8 @@ class Server:
                     client.sendEncode("username|FAIL")
             elif params[0] == "scoreboard":
                 print("scoreboard")
-                client.sendEncode(self.server.scoreboard.toJSON())
+                client.sendEncode(
+                    "scoreboard|"+self.server.scoreboard.toJSON())
             elif params[0] == "private":
                 if params[1]:
                     if params[1] == "make":
