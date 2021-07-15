@@ -43,7 +43,7 @@ class Server:
 
         self.closed = False
 
-        self.scorefile = open(SCORE_FILE, 'rw')
+        self.scorefile = open(SCORE_FILE, 'r+')
         self.scoreboard = Scoreboard(self.scorefile)
 
     def register_client(self, client):
