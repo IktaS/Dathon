@@ -358,24 +358,16 @@ class HighestScore(object):
         self.game=game
         self.playerList=[
             {
-                "username": "rafid",
-                "score": 98
+                "username": "Bot 1",
+                "score": 49
             },
             {
-                "username": "rafid lagi",
-                "score": 97
+                "username": "Bot 2",
+                "score": 49
             },
             {
-                "username": "rafid lagi2",
-                "score": 97
-            },
-            {
-                "username": "rafid lagi3",
-                "score": 96
-            },
-            {
-                "username": "rafid lagi4",
-                "score": 96
+                "username": "Bot 3",
+                "score": 49
             }
         ]
         self.font={
@@ -383,7 +375,7 @@ class HighestScore(object):
             'score' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Regular.ttf'),40)
         }
         self.text=[]
-        for i in range (5):
+        for i in range (len(self.playerList)):
             # print(i)
             self.text.append({
                 "rank":TextStatic(self.font['score'],str(i+1),CLR_Black,150,323+(60*i)),
@@ -395,7 +387,7 @@ class HighestScore(object):
     def draw(self,screen):
         screen.blit(self.htp, (0,0))
         self.button.draw(screen)
-        for i in range (5):
+        for i in range (len(self.playerList)):
             self.text[i]["rank"].draw(screen)
             self.text[i]["name"].draw(screen)
             self.text[i]["score"].draw(screen)
