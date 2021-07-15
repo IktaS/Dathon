@@ -15,11 +15,18 @@ class SeedHole():
         self.hover_color=  CLR_Tan
         self.inner_colour= self.normal_color
         self.image_size=(60,60)
-        self.image_sedikit = pygame.transform.scale(pygame.image.load('./client/assets/BijiSedikit.png'),self.image_size)
-        self.image_sedang= pygame.transform.scale(pygame.image.load('./client/assets/BijiSedang2.png'),self.image_size)
+        # self.image_sedikit = pygame.transform.scale(pygame.image.load('./client/assets/BijiSedikit.png'),self.image_size)
+        # self.image_sedang= pygame.transform.scale(pygame.image.load('./client/assets/BijiSedang2.png'),self.image_size)
         self.image_banyak= pygame.transform.scale(pygame.image.load('./client/assets/BijiBanyak.png'),self.image_size)
         self.image_kosong= pygame.transform.scale(pygame.image.load('./client/assets/BijiKosong.png'),self.image_size)
-        self.image = self.image_sedang
+        self.im1=pygame.transform.scale(pygame.image.load('./client/assets/Satu.png'),self.image_size)
+        self.im2=pygame.transform.scale(pygame.image.load('./client/assets/Dua.png'),self.image_size)
+        self.im3=pygame.transform.scale(pygame.image.load('./client/assets/Tiga.png'),self.image_size)
+        self.im4=pygame.transform.scale(pygame.image.load('./client/assets/Empat.png'),self.image_size)
+        self.im5=pygame.transform.scale(pygame.image.load('./client/assets/Lima.png'),self.image_size)
+        self.im6=pygame.transform.scale(pygame.image.load('./client/assets/Enam.png'),self.image_size)
+        self.im7=pygame.transform.scale(pygame.image.load('./client/assets/Tujuh.png'),self.image_size)
+        self.image = self.im7
         self.x=x
         self.y=y
         self.rect=self.image.get_rect(x=self.x,y=self.y)
@@ -30,12 +37,23 @@ class SeedHole():
     def update(self):
         if self.value>7:
             self.image=self.image_banyak
-        elif self.value > 3:
-            self.image=self.image_sedang
-        elif self.value <=3 and self.value > 0:
-            self.image=self.image_sedikit
+        elif self.value == 7:
+            self.image=self.im7
+        elif self.value == 6:
+            self.image=self.im6
+        elif self.value == 5:
+            self.image=self.im5
+        elif self.value == 4:
+            self.image=self.im4
+        elif self.value == 3:
+            self.image=self.im3
+        elif self.value == 2:
+            self.image=self.im2
+        elif self.value == 1:
+            self.image=self.im1
         elif self.value ==0:
             self.image=self.image_kosong
+        
         if self.hovered:
             self.inner_colour= self.hover_color
         else:
@@ -136,7 +154,6 @@ class PopUpWin():
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
         self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
         self.sf_text1=self.font_code.render(self.banner, True, (0,0,0))
-        self.text=""
         self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
         self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
         self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
@@ -148,6 +165,8 @@ class PopUpWin():
         screen.blit(self.sf_text2, self.sf_text2_rect)
         self.button.draw(screen)
     def update(self):
+        self.sf_text1=self.font_code.render(self.banner, True, (0,0,0))
+        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
         self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
         self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
         self.button.update()
