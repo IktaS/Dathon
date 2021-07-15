@@ -111,7 +111,7 @@ class Menu():
             'matchmake' : Button(self.font['text'],"Matchmaking",CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,726,MENU_BTN_BORDER,MENU_BTN_EDGE),
             'htp' : TextButton(self.font['text'],"How to Play",CLR_Tan,600,867,CLR_Paarl)
         }
-        self.inputBox=InputBox(self.font['text'],470,288,500, 100, CLR_Black,CLR_Tan,"")
+        self.inputBox=InputBox(self.font['text'],470,288,500, 100, CLR_Black,CLR_Tan,"Enter Name ...",8,"")
         self.title=TextStatic(self.font['title'],"Dathon",CLR_Paarl,553,87)
         self.popUp= PopUpMenu(self.game)
         self.popUpJoin= PopUpInput(self.game)
@@ -183,9 +183,9 @@ class Chat(object):
             'chat' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Regular.ttf'),28)
         }
         self.card= pygame.image.load('./client/assets/Chat.png').convert_alpha()
-        self.chatInputBox=InputBox(self.font['input'],1067,908,352, 73, CLR_Black,CLR_White,"")
+        self.chatInputBox=InputBox(self.font['input'],1067,908,352, 73, CLR_Black,CLR_White,"Type here...",14,"")
         self.staticText=[]
-        self.staticDraw=self.staticText[:4]
+        self.staticDraw=self.staticText[:5]
     def draw(self,screen):
         screen.blit(self.card, (1040,610))
         self.chatInputBox.draw(screen)
@@ -232,7 +232,7 @@ class Board(object):
     def __init__(self,game, *args):
         self.game=game
         self.chat=Chat(self.game)
-        self.board= pygame.image.load('./client/assets/DakonBoard.png').convert_alpha()
+        self.board= pygame.image.load('./client/assets/DakonBoard_Wooden.png').convert_alpha()
         self.myBoard=[
             SeedHole(40,806,475),
             SeedHole(40,708,475),

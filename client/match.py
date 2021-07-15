@@ -66,7 +66,7 @@ class Match:
                     break
             i = 0
             
-        self.board.draw(self.game.screen)
+        # self.board.draw(self.game.screen)
         self.checkenemyturn()
 
     def enemymove(self,i):
@@ -128,7 +128,7 @@ class Match:
                     break
             i = 0
             
-        self.board.draw(self.game.screen)
+        # self.board.draw(self.game.screen)
         self.checkemyturn()
 
     def checkemyturn(self):

@@ -132,7 +132,7 @@ class ScoreBox():
 class PopUpWin():
     def __init__(self):
         self.text=""
-        self.banner="Congratulation !"
+        self.banner=""
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
         self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
         self.sf_text1=self.font_code.render(self.banner, True, (0,0,0))

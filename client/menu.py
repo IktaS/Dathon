@@ -143,7 +143,7 @@ class PopUpInput():
         self.color_inactive = CLR_Black
         self.color_active = CLR_Black
         self.color=self.color_inactive
-        self.text_limit=15
+        self.text_limit=6
         self.display = "Enter code..."
         self.txt_surface = self.font.render(self.display, True, self.color)
         self.rect=self.txt_surface.get_rect(width=417,height=61,center=self.bg_rect.center,y=self.bg_rect.y+148)
@@ -189,7 +189,7 @@ class PopUpInput():
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                     self.display = self.text[-self.text_limit:]
-                elif len(self.text)<=6 :
+                elif len(self.text)<self.text_limit :
                     self.text += event.unicode
                     self.display = self.text[-self.text_limit:]
                 self.txt_surface = self.font.render(self.display, True, self.color)       
@@ -197,14 +197,15 @@ class PopUpInput():
                 self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
 
 class InputBox:
-    def __init__(self, font, x, y, w, h,color,active_color, text=''):
+    def __init__(self, font, x, y, w, h,color,active_color,display,limit, text=''):
         self.font=font
         self.color_inactive = color
         self.color_active = active_color
         self.color=self.color_inactive
+        self.placeholder=display
         self.text = text
-        self.text_limit=10
-        self.display = "Enter name..."
+        self.text_limit=limit
+        self.display = display
         self.txt_surface = self.font.render(self.display, True, self.color)
         self.rect=self.txt_surface.get_rect(width=w,height=h,x=x,y=y)
         self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
@@ -228,7 +229,7 @@ class InputBox:
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                     self.display = self.text[-self.text_limit:]
-                elif len(self.text)<=10 :
+                elif len(self.text)<self.text_limit :
                     # print(event.unicode)
                     self.text += event.unicode
                     self.display = self.text[-self.text_limit:]
@@ -238,7 +239,7 @@ class InputBox:
 
     def update(self):
         if self.active==False and self.text=="" and len(self.text)==0:
-            self.display = "Enter name..."
+            self.display = self.placeholder
             self.txt_surface = self.font.render(self.display, True, self.color) 
             self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
             self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
@@ -250,6 +251,7 @@ class InputBox:
             # print("kosong")
         else:
             self.display = self.text[-self.text_limit:]
+            # self.display = self.text
         self.txt_surface = self.font.render(self.display, True, self.color)
     
     def draw(self,screen):

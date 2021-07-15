@@ -40,11 +40,10 @@ class Server:
     # def send(self):
         # while True:
             # data = input().encode()
-            data = command.encode()
-            self.sock.send(data)
+        data = command.encode()
+        self.sock.send(data)
 
     def recv_thread(self):
-        # self.sock.settimeout(2)
         while self.running:
             data = self.sock.recv(BUFFER_SIZE)
             self.handle( data.decode() )
@@ -101,13 +100,16 @@ class Server:
             elif params[1] == "end":
                 
                 if params[2] == "win":
+                    self.game.board.win.banner="Congratulation !"
                     self.game.board.win.text="You Win!"
                     # pass
                 elif params[2] == "lose":
+                    self.game.board.win.banner="Too Bad !"
                     self.game.board.win.text="You Lose!"
                     # pass
                 elif params[2] == "draw":
-                    self.game.board.win.text="Mehh!"
+                    self.game.board.win.banner="GG  !!!"
+                    self.game.board.win.text="It's a Tie!"
                     # pass
                 self.game.board.update()
                 self.game.gameOver()
@@ -119,7 +121,7 @@ class Server:
             player=[]
             a=0
             for i in score:
-                print(score[i])
+                # print(score[i])
                 dict={
                     "username": i,
                     "score" : score[i]
