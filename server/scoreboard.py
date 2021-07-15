@@ -14,18 +14,18 @@ class Scoreboard:
 
     def toJSON(self):
         try:
-            sortedscore = dict(sorted(
-                self.scores.items(), key=lambda x: x[1], reverse=True
-            ))
+            sortedscore = {}
+            for w in sorted(self.scores, key=self.scores.get, reverse=True):
+                sortedscore[w] = self.scores[w]
             return json.dumps(sortedscore)
         except Exception as e:
             print(e)
 
     def save(self):
         try:
-            sortedscore = dict(sorted(
-                self.scores.items(), key=lambda x: x[1], reverse=True
-            ))
+            sortedscore = {}
+            for w in sorted(self.scores, key=self.scores.get, reverse=True):
+                sortedscore[w] = self.scores[w]
             self.file.seek(0)
             self.file.write(json.dumps(sortedscore))
             self.file.truncate()
