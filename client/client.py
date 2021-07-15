@@ -19,7 +19,7 @@ class GameState(Enum):
     CreateGame = 5
     JoinGame = 6
     Matchmake = 7
-
+    GameOver = 8
 # is_running=True
 class Game():
     # state=GameState.MENU
@@ -43,7 +43,8 @@ class Game():
 
     def toMenu(self):
         self.state = GameState.MENU
-
+    def gameOver(self):
+        self.state = GameState.GameOver
     def stop(self):
         self.server.stop()
         self.is_running=False
@@ -59,15 +60,12 @@ class Game():
                     self.stop()                    
                 if self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame:
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        # print("ko"+str(self.state))
-                        if self.menu.buttons["cgame"].bg_rect.collidepoint(event.pos) and self.state==self.prevsstate:
+                        if self.menu.buttons["cgame"].bg_rect.collidepoint(event.pos):
                             self.server.send('private|make')
-                            self.prevsstate=self.state
                             self.state=GameState.CreateGame
-                            # self.board.updateName()
                         elif self.menu.buttons["jgame"].bg_rect.collidepoint(event.pos):
                             self.state=GameState.JoinGame
-                        elif self.menu.buttons["htp"].rect.collidepoint(event.pos) and self.state==self.prevsstate:
+                        elif self.menu.buttons["htp"].rect.collidepoint(event.pos):
                             self.prevsstate=self.state
                             self.state=GameState.HTP
                             # event=pygame.NOEVENT
@@ -79,7 +77,7 @@ class Game():
                             self.server.send('matchmake|join')
                         
                     self.menu.event_handler(event)
-                elif(self.state==GameState.INGAME):
+                elif(self.state==GameState.INGAME or self.state==GameState.GameOver):
                     self.board.event_handler(event)
                 elif(self.state==GameState.HTP):
                     self.htp.event_handler(event)
@@ -89,7 +87,7 @@ class Game():
             if(self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame):
                 self.menu.update()
                 self.menu.draw(self.screen)
-            elif(self.state==GameState.INGAME):
+            elif(self.state==GameState.INGAME or self.state==GameState.GameOver):
                 self.board.update()
                 self.board.draw(self.screen)
             elif(self.state==GameState.HTP):
@@ -287,6 +285,7 @@ class Board(object):
         if self.game.menu.inputBox.text=="" :
             self.textName["player"] = TextStatic(self.font,str(self.game.server.id),CLR_Black,72,875)
         self.turn=TextStatic(self.font,"Turn :",CLR_Black,0,0)
+        self.win= PopUpWin()
 
     def draw(self,screen):
         screen.blit(self.board, (42,290))
@@ -299,6 +298,8 @@ class Board(object):
             self.textName[i].draw(screen)
         self.chat.draw(screen)
         self.turn.draw(screen)
+        if self.game.state == GameState.GameOver:
+            self.win.draw(screen)
     def update(self):
         for i in range(8):
             self.myBoard[i].update()
@@ -307,32 +308,30 @@ class Board(object):
             self.enemyBox[i].update()
         self.chat.update()
         self.turn.update()
+        if self.game.state == GameState.GameOver:
+            self.win.update()
+        
 
     def updateName(self):
         for i in self.textName:
             self.textName[i].update()
                       
     def event_handler(self,event):
-        for i in range(7):
-            self.myBoard[i].event_handler(event)
-            if event.type == pygame.MOUSEBUTTONDOWN and self.myBoard[i].hovered:
-                    self.game.match.move(i)
-                    # for i in range(7):
-                    #     print(self.myBoard[i].value,end=",")
-                    # print("")
-                    # for i in range(7):
-                    #     print(self.myBox[i].value,end=",")
-                    # print("")
-                    # for i in range(7):
-                    #     print(self.enemyBoard[i].value,end=",")
-                    # print("")
-                    # for i in range(7):
-                    #     print(self.enemyBox[i].value,end=",")
-                    # print("")
-                        
-                        
-                    # print("Jalan Gan")
-        self.chat.event_handler(event)
+        if self.game.state==GameState.INGAME:
+            for i in range(7):
+                self.myBoard[i].event_handler(event)
+                if event.type == pygame.MOUSEBUTTONDOWN and self.myBoard[i].hovered:
+                        self.game.match.move(i)
+            self.chat.event_handler(event)
+        # If state is GameOver listen to event only from box
+        if self.game.state == GameState.GameOver:
+            self.win.event_handler(event)
+            # If button in box clicked return to menu
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.win.button.bg_rect.collidepoint(event.pos):
+                    print(self.game.state)
+                    self.game.state=GameState.MENU
+                    print(self.game.state)
             
 class HowToPlay(object):
     def __init__(self,game, *args):

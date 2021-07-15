@@ -101,14 +101,18 @@ class Server:
 
             elif params[1] == "end":
                 if params[2] == "win":
-                    pass
+                    self.game.board.win.text="You Win!"
+                    # pass
                 elif params[2] == "lose":
-                    pass
+                    self.game.board.win.text="You Lose!"
+                    # pass
                 elif params[2] == "draw":
-                    pass
+                    self.game.board.win.text="Mehh!"
+                    # pass
 
                 self.send("exit")
-                self.game.toMenu()
+                
+                self.game.gameOver()
                 
 
 # try:

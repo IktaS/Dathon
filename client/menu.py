@@ -34,6 +34,8 @@ class Button():
 
         
     def update(self):
+        self.default_surface=self.font.render(self.text, True, self.def_text_color)
+        self.active_surface=self.font.render(self.text, True, self.act_text_color)
         if self.hovered:
             self.text_rect=self.text_active_rect
             self.bg_color=self.act_bg_color
