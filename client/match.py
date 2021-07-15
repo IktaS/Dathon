@@ -20,6 +20,9 @@ class Match:
         self.board.myBox[7].value = 48
         self.board.enemyBoard[7].value = 48
         self.board.enemyBox[7].value = 48
+        print("somthing")
+        self.board.update()
+        
 
 
     def move(self,i):

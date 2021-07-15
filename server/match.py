@@ -161,8 +161,8 @@ class MatchHandler:
         elif params[0] == 'chat':
             if params[1] == "cheat":
                 self.match.cheat()
-            else:    
-                self.match.chat(client, params[1])
+            # else:    
+            self.match.chat(client, params[1])
 
         elif params[0] == "terminate":
             other_client = self.match.getOther_client(client)

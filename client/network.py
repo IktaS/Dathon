@@ -115,8 +115,8 @@ class Server:
                 self.game.gameOver()
                 self.send("exit")
 
-        elif params[1] == 'cheat_activated':
-                self.match.cheat_activated()
+            elif params[1] == 'cheat_activated':
+                self.game.match.cheat_activated()
                 
         elif params[0] == 'scoreboard':
             score = json.loads(params[1])
@@ -130,7 +130,7 @@ class Server:
                     "score" : score[i]
                 }
                 player.append(dict)
-                if a >=5:
+                if a ==4:
                     break
                 a+=1
             self.game.hs.playerList=player

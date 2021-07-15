@@ -131,7 +131,7 @@ class PopUpInput():
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
         self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
         
-        self.sf_text1=self.font.render("Enter your friend coe!", True, (0,0,0))
+        self.sf_text1=self.font.render("Enter your friend code!", True, (0,0,0))
         self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
         self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
         self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
