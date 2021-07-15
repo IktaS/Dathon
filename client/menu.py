@@ -53,7 +53,6 @@ class Button():
             pygame.draw.rect(screen, self.bg_color, self.bg_rect,self.border,self.edge)
         screen.blit(self.surface, self.text_rect)
     def hover(self,event):
-        # self.popupObj.event_handler(event)
         if event.type == pygame.MOUSEMOTION:
             self.hovered= self.bg_rect.collidepoint(event.pos)
                 

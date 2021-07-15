@@ -93,8 +93,8 @@ class Match:
     def endgame(self):
         self.checkResult()
 
-        # self.server.saveScore( self.board[player1][7], self.player1.username)
-        # self.server.saveScore( self.board[player2][7], self.player2.username)
+        self.server.saveScore( self.board[player1][7], self.player1.username)
+        self.server.saveScore( self.board[player2][7], self.player2.username)
 
         self.player1.setCommandHandler( self.previusPlayer1Handler)
         self.player2.setCommandHandler( self.previusPlayer2Handler)

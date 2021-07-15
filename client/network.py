@@ -100,6 +100,7 @@ class Server:
                 self.game.match.enemymove(int(params[2]))
 
             elif params[1] == "end":
+                
                 if params[2] == "win":
                     self.game.board.win.text="You Win!"
                     # pass
@@ -109,10 +110,10 @@ class Server:
                 elif params[2] == "draw":
                     self.game.board.win.text="Mehh!"
                     # pass
-
+                self.game.board.update()
+                self.game.gameOver()
                 self.send("exit")
                 
-                self.game.gameOver()
                 
 
 # try:
