@@ -4,6 +4,7 @@ import select
 import sys
 from threading import Thread
 from enum import Enum
+import json
 
 config = configparser.ConfigParser()
 config.read(".env")
@@ -67,8 +68,6 @@ class Server:
             else:
                 print("invalid request")
 
-        # scoreboard in json
-
         elif params[0] == "room":
             if params[2] == "join":
                 self.send("start")
@@ -113,6 +112,11 @@ class Server:
                 self.game.board.update()
                 self.game.gameOver()
                 self.send("exit")
+
+        elif cmd[0] == '{':
+            score = json.loads(cmd)
+            for i in score:
+                print(score[i])
                 
                 
 
