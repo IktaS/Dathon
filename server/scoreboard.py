@@ -7,6 +7,9 @@ class Scoreboard:
         self.scores = json.load(file)
 
     def addScore(self, username, score):
+        if username in self.scores:
+            if score < self.scores[username]:
+                return
         self.scores[username] = score
 
     def toJSON(self):
