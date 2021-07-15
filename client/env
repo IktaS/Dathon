@@ -1,0 +1,7 @@
+[app]
+APP_HOST = "127.0.0.1"
+APP_PORT = 9090
+
+[game]
+WIDTH = 1440
+HEIGHT = 1024

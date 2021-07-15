@@ -2,14 +2,8 @@ import sys
 import pygame
 import os
 from enum import Enum
+from game_constant import *
 # from clientoop import GameState
-class GameState(Enum):
-    MENU = 1
-    INGAME = 2
-    HTP = 3
-    HS=4
-    CreateGame = 5
-    JoinGame = 6
 class Button():
     def __init__(self,font,text,text_def_color,text_act_color,bg_def_color,bg_act_color,rect_w,rect_h,rect_x,rect_y,border,edge):
         self.font = font
@@ -40,6 +34,8 @@ class Button():
 
         
     def update(self):
+        self.default_surface=self.font.render(self.text, True, self.def_text_color)
+        self.active_surface=self.font.render(self.text, True, self.act_text_color)
         if self.hovered:
             self.text_rect=self.text_active_rect
             self.bg_color=self.act_bg_color
@@ -73,6 +69,9 @@ class TextStatic():
     def draw(self,screen):
         screen.blit(self.surface, (self.x,self.y))
 
+    def update(self):
+        self.surface=self.font.render(self.text, True, self.color)
+
 class TextButton():
     def __init__(self,font,text_content,text_color,x,y,active_color):
         self.font=font
@@ -100,18 +99,18 @@ class PopUpMenu():
     def __init__(self,game):
         self.game=game
         self.text=""
-        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
-        self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
-        self.sf_text1=self.font.render("This is your code", True, (0,0,0))
-        self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
-        self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
+        self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
         
+        self.sf_text1=self.font.render("Share code to your friend!", True, (0,0,0))
+        
+        self.sf_text3=self.font.render("Click ‘enter’ to return/cancel", True, (0,0,0))
+        self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
         self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
-        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
         self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
+        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
         self.sf_text3_rect = self.sf_text3.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+259)
         self.inputed=False
-        
         
     def draw(self,screen):
         pygame.draw.rect(screen, (207, 166, 124,255), self.bg_rect, 0,20)
@@ -120,48 +119,92 @@ class PopUpMenu():
         screen.blit(self.sf_text3, self.sf_text3_rect)
     def update(self):
         self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
+        self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
         # pass
         
     def event_handler(self,event):
         pass
         
 class PopUpInput():
-    def __init__(self):
-        self.font=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),48)
-        self.font_code=pygame.font.Font(os.path.join("assets","fonts",'Poppins-Bold.ttf'),54)
-        self.sf_text1=self.font.render("This is your code", True, (0,0,0))
-        self.sf_text2=self.font_code.render("ABCDEF", True, (255,255,255))
-        self.input=InputBox()
+    def __init__(self,game):
+        self.game=game
+        self.text=""
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
+        self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
+        
+        self.sf_text1=self.font.render("Enter your friend coe!", True, (0,0,0))
         self.sf_text3=self.font.render("Click ‘enter’ to continue", True, (0,0,0))
-        
+        self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
         self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
-        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
         self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
+        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
         self.sf_text3_rect = self.sf_text3.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+259)
-        self.inputed=False
+        self.active=False
         
-        
-    def draw(self):
-        pygame.draw.rect(self.screen, (207, 166, 124,255), self.bg_rect, 0,20)
-        self.screen.blit(self.sf_text1, self.sf_text1_rect)
-        self.screen.blit(self.sf_text2, self.sf_text2_rect)
-        self.screen.blit(self.sf_text3, self.sf_text3_rect)
-        
+        self.color_inactive = CLR_Black
+        self.color_active = CLR_Black
+        self.color=self.color_inactive
+        self.text_limit=15
+        self.display = "Enter code..."
+        self.txt_surface = self.font.render(self.display, True, self.color)
+        self.rect=self.txt_surface.get_rect(width=417,height=61,center=self.bg_rect.center,y=self.bg_rect.y+148)
+        self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+
+    def draw(self,screen):
+        pygame.draw.rect(screen, (207, 166, 124,255), self.bg_rect, 0,20)
+        screen.blit(self.sf_text1, self.sf_text1_rect)
+        screen.blit(self.sf_text3, self.sf_text3_rect)
+        screen.blit(self.txt_surface, self.text_rect)
+        pygame.draw.rect(screen, self.color, self.rect, 2,20)
+
+    def update(self):
+        if self.active==False and self.text=="" and len(self.text)==0:
+            self.display = "Enter Code..."
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+        elif self.text=="" and len(self.text)==0:
+            self.display = "|"
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+            # print("kosong")
+        else:
+            self.display = self.text[-self.text_limit:]
+        self.txt_surface = self.font.render(self.display, True, self.color)
+    
     def event_handler(self,event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos) or self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+            if self.active:
+                self.color = self.color_active
+            else:
+                self.color = self.color_inactive
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                pass
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    self.active=False
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                    self.display = self.text[-self.text_limit:]
+                elif len(self.text)<=6 :
+                    self.text += event.unicode
+                    self.display = self.text[-self.text_limit:]
+                self.txt_surface = self.font.render(self.display, True, self.color)       
+                self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+                self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
 
 class InputBox:
-    def __init__(self, server, font, x, y, w, h,color,active_color, text=''):
-        self.server = server
-
+    def __init__(self, font, x, y, w, h,color,active_color, text=''):
         self.font=font
         self.color_inactive = color
         self.color_active = active_color
         self.color=self.color_inactive
         self.text = text
-        self.text_limit=15
+        self.text_limit=10
         self.display = "Enter name..."
         self.txt_surface = self.font.render(self.display, True, self.color)
         self.rect=self.txt_surface.get_rect(width=w,height=h,x=x,y=y)
@@ -170,19 +213,24 @@ class InputBox:
 
     def event_handler(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
+            if self.rect.collidepoint(event.pos) or self.text_rect.collidepoint(event.pos):
                 self.active = not self.active
             else:
                 self.active = False
-            self.color = self.color if self.color_active else self.color_inactive
+            if self.active:
+                self.color = self.color_active
+            else:
+                self.color = self.color_inactive
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
+                    # self.active=False
                     print(self.text)
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                     self.display = self.text[-self.text_limit:]
-                else:
+                elif len(self.text)<=10 :
+                    # print(event.unicode)
                     self.text += event.unicode
                     self.display = self.text[-self.text_limit:]
                 self.txt_surface = self.font.render(self.display, True, self.color)       
@@ -190,7 +238,20 @@ class InputBox:
                 self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
 
     def update(self):
-        self.display = self.text[-self.text_limit:]
+        if self.active==False and self.text=="" and len(self.text)==0:
+            self.display = "Enter name..."
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+        elif self.text=="" and len(self.text)==0:
+            self.display = "|"
+            self.txt_surface = self.font.render(self.display, True, self.color) 
+            self.rect=self.txt_surface.get_rect(width=self.rect.w,height=self.rect.h,x=self.rect.x,y=self.rect.y)
+            self.text_rect = self.txt_surface.get_rect(center=self.rect.center)
+            # print("kosong")
+        else:
+            self.display = self.text[-self.text_limit:]
+        self.txt_surface = self.font.render(self.display, True, self.color)
     
     def draw(self,screen):
         screen.blit(self.txt_surface, self.text_rect)

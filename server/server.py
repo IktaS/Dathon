@@ -1,4 +1,5 @@
 import configparser
+from server.scoreboard import Scoreboard
 from match import Match
 from clients import Client, ClientFactory, ClientNumberIDGenerator
 from room import UIDGenerator, Room, RoomFactory
@@ -14,6 +15,8 @@ APP_HOST = config.get("app", "APP_HOST")
 APP_PORT = config.get("app", "APP_PORT")
 
 BUFFER_SIZE = int(config.get("app", "BUFFER_SIZE"))
+
+SCORE_FILE = config.get("app", "SCORE_FILE")
 
 
 class Server:
@@ -39,6 +42,9 @@ class Server:
         self.BUFFER_SIZE = BUFFER_SIZE
 
         self.closed = False
+
+        f = open(SCORE_FILE)
+        self.scoreboard = Scoreboard(f)
 
     def register_client(self, client):
         self.clients.append(client)
@@ -84,7 +90,7 @@ class Server:
             self.register_client(client)
 
     def saveScore(self, score, username):
-        pass
+        self.scoreboard.addScore(username, score)
 
     class LoggerHandler:
         def __init__(self, logger):
@@ -128,7 +134,7 @@ class Server:
                     client.sendEncode("username|FAIL")
             elif params[0] == "scoreboard":
                 print("scoreboard")
-                # TODO: implement scoreboard command
+                client.sendEncode(self.server.scoreboard.toJSON())
             elif params[0] == "private":
                 if params[1]:
                     if params[1] == "make":
@@ -146,7 +152,6 @@ class Server:
 
             elif params[0] == "matchmake":
                 print("matchmake")
-                # TODO: implement matchmake command
                 self.server.queue.put(client)
                 if self.server.queue.qsize() == 2:
                     c1 = self.server.queue.get()
@@ -162,6 +167,11 @@ s = Server('localhost', 8081, sys.stdout,
 
 try:
     s.start_server()
+    input()
 except KeyboardInterrupt:
+    s.stop_server()
+    sys.exit(0)
+except Exception as e:
+    print(e)
     s.stop_server()
     sys.exit(0)

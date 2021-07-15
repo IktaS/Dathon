@@ -3,12 +3,13 @@ import socket
 import select
 import sys
 from threading import Thread
+from enum import Enum
 
 config = configparser.ConfigParser()
 config.read(".env")
 
-# APP_HOST = config.get("app", "APP_HOST")
 APP_HOST = 'localhost'
+# APP_HOST = config.get("app", "APP_HOST")
 APP_PORT = int(config.get("app", "APP_PORT"))
 
 BUFFER_SIZE = int(config.get("app", "BUFFER_SIZE"))
@@ -25,8 +26,14 @@ class Server:
         self.run()
 
     def run(self):
-        Thread(target=self.send, args=()).start()
+        self.running = True
+        # Thread(target=self.send, args=()).start()
         Thread(target=self.recv_thread, args=()).start()
+
+    def stop(self):
+        self.send("terminate")
+        self.running = False
+        self.sock.close()
 
     def send(self, command: str):
     # def send(self):
@@ -36,11 +43,13 @@ class Server:
             self.sock.send(data)
 
     def recv_thread(self):
-        while True:
+        # self.sock.settimeout(2)
+        while self.running:
             data = self.sock.recv(BUFFER_SIZE)
             self.handle( data.decode() )
 
     def handle(self, cmd):
+        print(cmd)
         params = cmd.split("|")
 
         if params[0] == "username":
@@ -57,22 +66,54 @@ class Server:
                         print("id not found")
             else:
                 print("invalid request")
+
+        # scoreboard in json
+
+        elif params[0] == "room":
+            if params[2] == "join":
+                self.send("start")
+
+        elif params[0] == "private":
+            if params[1] == "failed":
+                self.game.toMenu()
+            else:
+                self.game.menu.popUp.text = params[1]
+
+        elif params[0] == "chat":
+            self.game.board.chat.updateChat(params[1],params[2])
     
         elif params[0] == "match":
             if params[1] == "start":
-                self.game.state.INGAME
-            elif params[1] == "move":
+                self.game.initMatch()
                 if params[2] == "other":
-                    pass
+                    self.game.match.myturn = False
+                    self.game.board.turn.text="Enemy Turn"
+                    self.game.board.textName["enemy"].text = params[3]
+                    self.game.board.updateName()
                 elif params[2] == "you":
-                    pass            
+                    self.game.match.myturn = True
+                    self.game.board.turn.text="Your Turn"
+                    self.game.board.textName["enemy"].text = params[3]
+                    self.game.board.updateName()
 
-        elif params[0] == "private":
-            self.game.menu.popUp.text = params[1]
+            elif params[1] == "move":
+                self.game.match.enemymove(int(params[2]))
 
-        else:
-            print(cmd)
+            elif params[1] == "end":
+                if params[2] == "win":
+                    self.game.board.win.text="You Win!"
+                    # pass
+                elif params[2] == "lose":
+                    self.game.board.win.text="You Lose!"
+                    # pass
+                elif params[2] == "draw":
+                    self.game.board.win.text="Mehh!"
+                    # pass
 
+                self.send("exit")
+                
+                self.game.gameOver()
+                
 
 # try:
 #     # server = Server(APP_HOST, APP_PORT)

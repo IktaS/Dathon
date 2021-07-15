@@ -3,42 +3,48 @@ import random
 
 from clients import *
 
-
 class Match:
     def __init__(self, server, player1, player2):
         self.server = server
         self.player1 = player1
         self.player2 = player2
-
+        
         self.board = {
             self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
             self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
+            # self.player1: [0, 0, 0, 0, 0, 0, 1, 96],
+            # self.player2: [0, 0, 0, 0, 0, 0, 1, 0]
+
         }
 
-        self.broadcast('match|start')
-        self.first_move()
-
         handler = MatchHandler(self)
+        self.previusPlayer1Handler = player1.commandHandler
+        self.previusPlayer2Handler = player2.commandHandler
         self.player1.setCommandHandler(handler)
         self.player2.setCommandHandler(handler)
         
+        self.startgame()
 
-    def first_move(self):
+    def startgame(self):
+        print('match|start')
+
         if bool(random.getrandbits(1)):
             self.current_player = self.player1
-            self.player2.sendEncode('match|move|other')
+            self.player2.sendEncode('match|start|other|' + self.player1.username)
+            self.player1.sendEncode('match|start|you|' + self.player2.username)
         else:
             self.current_player = self.player2
-            self.player1.sendEncode('match|move|other')
+            self.player1.sendEncode('match|start|other|' + self.player2.username)
+            self.player2.sendEncode('match|start|you|' + self.player1.username)
 
-        self.current_player.sendEncode('match|move|you')
 
     def move(self, client, i: int):
+        # print(self.board)
         if client != self.current_player:
             return
 
         other_client = self.getOther_client(client)
-        other_client.sendEncode('match|move|' + i)
+        other_client.sendEncode('match|move|' + str(i))
 
         biji = self.board[client][i]
         self.board[client][i] = 0
@@ -80,15 +86,24 @@ class Match:
             i = 0
 
         if (self.check_endgame()):
-            self.server.saveScore(score, username)
-            self.server.saveScore(score, username)
-
-            self.server.saveScore(
-                self.board[player1][7], self.player1.username)
-            self.server.saveScore(
-                self.board[player2][7], self.player2.username)
+            self.endgame()
         else:
             self.checkturn(other_client)
+
+    def endgame(self):
+        self.checkResult()
+
+        # self.server.saveScore( self.board[player1][7], self.player1.username)
+        # self.server.saveScore( self.board[player2][7], self.player2.username)
+
+        self.player1.setCommandHandler( self.previusPlayer1Handler)
+        self.player2.setCommandHandler( self.previusPlayer2Handler)
+
+    def check_endgame(self):
+        if (self.board[self.player1][7] + self.board[self.player2][7]) == 98:
+            return True
+        else:
+            return False
 
     def checkturn(self, client):
         for i in range(7):
@@ -102,32 +117,24 @@ class Match:
         else:
             return self.player1
 
-    def check_endgame(self):
-        biji = self.board1
-        biji += self.board2
-
-        if (self.board1 + self.board2) == 98:
-            # self.checkResult()
-            return True
+    def checkResult(self):
+        if self.board[self.player1][7] > self.board[self.player2][7]:
+            self.player1.sendEncode('match|end|win')
+            self.player2.sendEncode('match|end|lose')
+        elif self.board[self.player1][7] < self.board[self.player2][7]:
+            self.player1.sendEncode('match|end|win')
+            self.player2.sendEncode('match|end|lose')
         else:
-            return False
-
-    # def checkResult(self):
-    #     if self.board1 > self.board2:
-    #         self.player1.sendEncode('match|end|win')
-    #         self.player2.sendEncode('match|end|lose')
-    #     elif self.board1 > self.board2:
-    #         self.player1.sendEncode('match|end|win')
-    #         self.player2.sendEncode('match|end|lose')
-    #     else:
-    #         self.broadcast('match|end|draw')
+            self.broadcast('match|end|draw')
 
     def broadcast(self, message):
         self.player1.sendEncode(message)
         self.player2.sendEncode(message)
 
     def chat(self, client, message):
+        
         if client == self.player1:
+            print("p1")
             self.player2.sendEncode('chat|' + client.username + '|' + message)
         else:
             self.player1.sendEncode('chat|' + client.username + '|' + message)
@@ -138,6 +145,7 @@ class MatchHandler:
         self.match = match
 
     def handle(self, client: Client, command: str):
+        print("matchHandler|" + command)
         command = command.rstrip()
         params = command.split("|")
 
@@ -146,4 +154,10 @@ class MatchHandler:
                 self.match.move(client, int(params[2]))
 
         elif params[0] == 'chat':
-            self.match.chat(command, params[1])
+            self.match.chat(client, params[1])
+
+        elif params[0] == "terminate":
+            other_client = self.match.getOther_client(client)
+            other_client.sendEncode('match|end|win')
+            other_client.setCommandHandler( self.match.previusPlayer1Handler)
+            client.stop()

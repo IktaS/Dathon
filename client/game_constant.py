@@ -6,6 +6,12 @@ config.read(".env")
 SCREEN_W = int(config.get("game", "WIDTH"))
 SCREEN_H = int(config.get("game", "HEIGHT"))
 
+# APP_HOST = "127.0.0.1"
+# APP_PORT = "9090"
+
+# SCREEN_W = 1440
+# SCREEN_H = 1240
+
 # Color https://chir.ag/projects/name-that-color :)
 CLR_ProvincialPink = (254, 243, 243)
 CLR_Parchment = (238, 228, 208)
