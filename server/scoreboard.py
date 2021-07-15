@@ -10,7 +10,8 @@ class Scoreboard:
         self.scores[username] = score
 
     def toJSON(self):
-        return json.dumps(self.scores)
+        sortedscore = sorted(self.scores, key=lambda x: x[1], reverse=True)
+        return json.dumps(sortedscore)
 
     def save(self, data):
         self.file.seek(0)
