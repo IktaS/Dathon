@@ -1,5 +1,5 @@
 import configparser
-from server.scoreboard import Scoreboard
+from scoreboard import Scoreboard
 from match import Match
 from clients import Client, ClientFactory, ClientNumberIDGenerator
 from room import UIDGenerator, Room, RoomFactory

@@ -93,8 +93,8 @@ class Match:
     def endgame(self):
         self.checkResult()
 
-        # self.server.saveScore( self.board[player1][7], self.player1.username)
-        # self.server.saveScore( self.board[player2][7], self.player2.username)
+        self.server.saveScore( self.board[self.player1][7], self.player1.username)
+        self.server.saveScore( self.board[self.player2][7], self.player2.username)
 
         self.player1.setCommandHandler( self.previusPlayer1Handler)
         self.player2.setCommandHandler( self.previusPlayer2Handler)
@@ -122,8 +122,8 @@ class Match:
             self.player1.sendEncode('match|end|win')
             self.player2.sendEncode('match|end|lose')
         elif self.board[self.player1][7] < self.board[self.player2][7]:
-            self.player1.sendEncode('match|end|win')
-            self.player2.sendEncode('match|end|lose')
+            self.player2.sendEncode('match|end|win')
+            self.player1.sendEncode('match|end|lose')
         else:
             self.broadcast('match|end|draw')
 

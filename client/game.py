@@ -2,6 +2,8 @@ import pygame
 import math
 import os
 from game_constant import *
+from menu import Button
+
 class SeedHole():
     def __init__(self,radius,x,y,value=7):
         self.border_colour = CLR_Black
@@ -90,11 +92,6 @@ class ValueBox():
     def update(self):
         self.textImage=self.font.render(str(self.value), True, self.border_colour)
         self.image = self.textImage
-        
-        # if self.hovered:
-        #     self.inner_colour= self.hover_color
-        # else:
-        #     self.inner_colour= self.normal_color
     def draw(self,screen):
         pygame.draw.rect(screen,self.border_colour, self.outer_rect,self.outer_border_width)
         pygame.draw.rect(screen,self.inner_colour, self.inner_rect,self.inner_border_width)
@@ -116,12 +113,10 @@ class ScoreBox():
         self.normal_color=  CLR_Paarl
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),33)
         self.value=value
-        # self.textImage=
         self.image = self.font.render(str(self.value), True, self.border_colour)
         self.outer_x=x
         self.outer_y=y
         self.outer_rect=self.image.get_rect(x=self.outer_x,y=self.outer_y,width=self.outer_w,height=self.outer_h)
-        # self.inner_rect=self.image.get_rect(x=self.inner_x,y=self.inner_y,width=self.inner_w,height=self.inner_h)
         self.text_rect = self.image.get_rect(center=self.outer_rect.center)
         self.hovered=False
     def update(self):
@@ -133,3 +128,29 @@ class ScoreBox():
     def event_handler(self,event):
         if event.type == pygame.MOUSEMOTION:
             self.hovered= self.outer_rect.collidepoint(event.pos)
+
+class PopUpWin():
+    def __init__(self):
+        self.text=""
+        self.banner="Congratulation !"
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),44)
+        self.font_code=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),54)
+        self.sf_text1=self.font_code.render(self.banner, True, (0,0,0))
+        self.text=""
+        self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
+        self.bg_rect=self.sf_text2.get_rect(width=699,height=378,x=370,y=308)
+        self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
+        self.sf_text1_rect = self.sf_text1.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+46)
+        self.button=Button(self.font_code,"Back to Main Menu",CLR_Black,CLR_ProvincialPink,CLR_Black,(241,202,137),MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,self.bg_rect.y+259,MENU_BTN_BORDER,MENU_BTN_EDGE)
+    def draw(self,screen):
+        pygame.draw.rect(screen, (207, 166, 124,255), self.bg_rect, 0,20)
+        screen.blit(self.sf_text1, self.sf_text1_rect)
+        screen.blit(self.sf_text2, self.sf_text2_rect)
+        self.button.draw(screen)
+    def update(self):
+        self.sf_text2=self.font_code.render(self.text, True, (255,255,255))
+        self.sf_text2_rect = self.sf_text2.get_rect(center=self.bg_rect.center,y=self.bg_rect.y+148)
+        self.button.update()
+    def event_handler(self,event):
+        self.button.hover(event)
+        # pass
