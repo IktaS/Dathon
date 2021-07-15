@@ -146,7 +146,7 @@ class Menu():
                     self.game.server.send('private|make')
                     self.game.state=GameState.CreateGame
                 elif self.buttons["jgame"].bg_rect.collidepoint(event.pos):
-                    self.state=GameState.JoinGame
+                    self.game.state=GameState.JoinGame
                 elif self.buttons["htp"].rect.collidepoint(event.pos):
                     self.game.state=GameState.HTP
                 elif self.trophy_rect.collidepoint(event.pos):

@@ -43,8 +43,8 @@ class Server:
 
         self.closed = False
 
-        f = open(SCORE_FILE)
-        self.scoreboard = Scoreboard(f)
+        self.scorefile = open(SCORE_FILE, 'rw')
+        self.scoreboard = Scoreboard(self.scorefile)
 
     def register_client(self, client):
         self.clients.append(client)
@@ -71,6 +71,8 @@ class Server:
         for client in self.clients:
             client.stop()
         self.socket.close()
+        self.scoreboard.save()
+        self.scorefile.close()
 
     def find_client(self, id):
         for client in self.clients:
