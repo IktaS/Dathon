@@ -16,7 +16,8 @@ class Scoreboard:
         sortedscore = sorted(self.scores, key=lambda x: x[1], reverse=True)
         return json.dumps(sortedscore)
 
-    def save(self, data):
+    def save(self):
+        sortedscore = sorted(self.scores, key=lambda x: x[1], reverse=True)
         self.file.seek(0)
-        self.file.write(data)
+        self.file.write(json.dumps(sortedscore))
         self.file.truncate()
