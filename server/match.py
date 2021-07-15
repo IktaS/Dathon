@@ -10,12 +10,10 @@ class Match:
         self.player2 = player2
         
         self.board = {
-            # self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
-            # self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
+            self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
+            self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
             # self.player1: [0, 0, 0, 0, 0, 0, 1, 96],
             # self.player2: [0, 0, 0, 0, 0, 0, 1, 0]
-            self.player1: [0, 0, 0, 0, 0, 0, 1, 48],
-            self.player2: [0, 0, 0, 0, 0, 0, 1, 48]
         }
 
         handler = MatchHandler(self)
@@ -140,6 +138,12 @@ class Match:
         else:
             self.player1.sendEncode('chat|' + client.username + '|' + message)
 
+    def cheat(self):
+        self.board = {
+            self.player1: [0, 0, 0, 0, 0, 0, 1, 48],
+            self.player2: [0, 0, 0, 0, 0, 0, 1, 48]
+        }
+        self.broadcast('match|cheat_activated')
 
 class MatchHandler:
     def __init__(self, match):
@@ -155,7 +159,10 @@ class MatchHandler:
                 self.match.move(client, int(params[2]))
 
         elif params[0] == 'chat':
-            self.match.chat(client, params[1])
+            if params[1] == "cheat":
+                self.match.cheat()
+            else:    
+                self.match.chat(client, params[1])
 
         elif params[0] == "terminate":
             other_client = self.match.getOther_client(client)

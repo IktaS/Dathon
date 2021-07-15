@@ -4,6 +4,24 @@ class Match:
         self.board = game.board
         self.myturn = False
 
+    def cheat_activated(self):
+        for i in range(6):
+            self.board.myBoard[i].value = 0
+            self.board.myBox[i].value = 0
+            self.board.enemyBoard[i].value = 0
+            self.board.enemyBox[i].value = 0
+
+        self.board.myBoard[6].value = 1
+        self.board.myBox[6].value = 1
+        self.board.enemyBoard[6].value = 1
+        self.board.enemyBox[6].value = 1
+
+        self.board.myBoard[7].value = 48
+        self.board.myBox[7].value = 48
+        self.board.enemyBoard[7].value = 48
+        self.board.enemyBox[7].value = 48
+
+
     def move(self,i):
         if self.myturn == False:
             return

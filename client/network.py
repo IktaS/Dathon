@@ -115,6 +115,9 @@ class Server:
                 self.game.gameOver()
                 self.send("exit")
 
+        elif params[1] == 'cheat_activated':
+                self.match.cheat_activated()
+                
         elif params[0] == 'scoreboard':
             score = json.loads(params[1])
             
