@@ -153,19 +153,3 @@ Server will enter that client in a matchmaking queue, and returns
 matchmake|{queue-id}|count|{player-count}
 ```
 With `queue-id` is the id of the queue which the player is in, and `player-count` the number of player in that queue.
-
-When a match has been found and ready to be made, 
-```bash
-matchmake|{queue-id}|start
-```
-will be broadcasted to all involved client. Indicating that their match is about to start
-
-To exit a matchmaking queue, client can send
-```bash
-matchmake|exit
-```
-
-server will return
-```bash
-matchmake|exit|OK
-```
