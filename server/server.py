@@ -43,8 +43,9 @@ class Server:
 
         self.closed = False
 
-        self.scorefile = open(SCORE_FILE, 'rw')
+        self.scorefile = open(SCORE_FILE, 'r+')
         self.scoreboard = Scoreboard(self.scorefile)
+        print(self.scoreboard.toJSON())
 
     def register_client(self, client):
         self.clients.append(client)
