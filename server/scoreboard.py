@@ -13,15 +13,21 @@ class Scoreboard:
         self.scores[username] = score
 
     def toJSON(self):
-        sortedscore = dict(sorted(
-            self.scores.items(), key=lambda x: x[1], reverse=True
-        ))
-        return json.dumps(sortedscore)
+        try:
+            sortedscore = dict(sorted(
+                self.scores.items(), key=lambda x: x[1], reverse=True
+            ))
+            return json.dumps(sortedscore)
+        except Exception as e:
+            print(e)
 
     def save(self):
-        sortedscore = dict(sorted(
-            self.scores.items(), key=lambda x: x[1], reverse=True
-        ))
-        self.file.seek(0)
-        self.file.write(json.dumps(sortedscore))
-        self.file.truncate()
+        try:
+            sortedscore = dict(sorted(
+                self.scores.items(), key=lambda x: x[1], reverse=True
+            ))
+            self.file.seek(0)
+            self.file.write(json.dumps(sortedscore))
+            self.file.truncate()
+        except Exception as e:
+            print(e)
