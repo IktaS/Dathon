@@ -113,10 +113,22 @@ class Server:
                 self.game.gameOver()
                 self.send("exit")
 
-        elif cmd[0] == '{':
-            score = json.loads(cmd)
+        elif params[0] == 'scoreboard':
+            score = json.loads(params[1])
+            
+            player=[]
+            a=0
             for i in score:
                 print(score[i])
+                dict={
+                    "username": i,
+                    "score" : score[i]
+                }
+                player.append(dict)
+                if a >=5:
+                    break
+                a+=1
+            self.game.hs.playerList=player
                 
                 
 

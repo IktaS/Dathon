@@ -10,10 +10,10 @@ class Match:
         self.player2 = player2
         
         self.board = {
-            self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
-            self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
-            # self.player1: [0, 0, 0, 0, 0, 0, 1, 96],
-            # self.player2: [0, 0, 0, 0, 0, 0, 1, 0]
+            # self.player1: [7, 7, 7, 7, 7, 7, 7, 0],
+            # self.player2: [7, 7, 7, 7, 7, 7, 7, 0]
+            self.player1: [0, 0, 0, 0, 0, 0, 1, 96],
+            self.player2: [0, 0, 0, 0, 0, 0, 1, 0]
 
         }
 

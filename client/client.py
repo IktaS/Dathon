@@ -356,20 +356,7 @@ class HowToPlay(object):
 class HighestScore(object):
     def __init__(self,game, *args):
         self.game=game
-        self.playerList=[
-            {
-                "username": "Bot 1",
-                "score": 49
-            },
-            {
-                "username": "Bot 2",
-                "score": 49
-            },
-            {
-                "username": "Bot 3",
-                "score": 49
-            }
-        ]
+        self.playerList=[]
         self.font={
             'text' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),36),
             'score' : pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Regular.ttf'),40)
@@ -394,6 +381,15 @@ class HighestScore(object):
             
     def update(self):
         self.button.update()
+        self.text=[]
+        for i in range (len(self.playerList)):
+            # print(i)
+            self.text.append({
+                "rank":TextStatic(self.font['score'],str(i+1),CLR_Black,150,323+(60*i)),
+                "name":TextStatic(self.font['score'],self.playerList[i]['username'],CLR_Black,387,323+(60*i)),
+                "score":TextStatic(self.font['score'],str(self.playerList[i]['score']),CLR_Black,996,323+(60*i)),
+            })
+        
     def event_handler(self,event):
         self.button.hover(event)
         if event.type == pygame.MOUSEBUTTONDOWN and self.button.bg_rect.collidepoint(event.pos):
