@@ -92,11 +92,6 @@ class ValueBox():
     def update(self):
         self.textImage=self.font.render(str(self.value), True, self.border_colour)
         self.image = self.textImage
-        
-        # if self.hovered:
-        #     self.inner_colour= self.hover_color
-        # else:
-        #     self.inner_colour= self.normal_color
     def draw(self,screen):
         pygame.draw.rect(screen,self.border_colour, self.outer_rect,self.outer_border_width)
         pygame.draw.rect(screen,self.inner_colour, self.inner_rect,self.inner_border_width)
@@ -118,12 +113,10 @@ class ScoreBox():
         self.normal_color=  CLR_Paarl
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),33)
         self.value=value
-        # self.textImage=
         self.image = self.font.render(str(self.value), True, self.border_colour)
         self.outer_x=x
         self.outer_y=y
         self.outer_rect=self.image.get_rect(x=self.outer_x,y=self.outer_y,width=self.outer_w,height=self.outer_h)
-        # self.inner_rect=self.image.get_rect(x=self.inner_x,y=self.inner_y,width=self.inner_w,height=self.inner_h)
         self.text_rect = self.image.get_rect(center=self.outer_rect.center)
         self.hovered=False
     def update(self):

@@ -20,20 +20,27 @@ class GameState(Enum):
     JoinGame = 6
     Matchmake = 7
     GameOver = 8
+    
+# Main Game Class
 class Game():
     def __init__(self, *args):
+        # pygame init
         pygame.init()
-        self.state=GameState.MENU
-        self.prevsstate=GameState.MENU
         self.title="Dathon"
         pygame.display.set_caption(self.title)
         self.screen = pygame.display.set_mode((SCREEN_W,SCREEN_H))
         self.clock = pygame.time.Clock()
-        self.server = Server(self)
+        
+        self.server = Server(self) # connection here
+        
+        #game asset init
+        self.state=GameState.MENU
         self.menu= Menu(self)
         self.htp= HowToPlay(self)
         self.hs= HighestScore(self)
+        self.matchmaking=Matchmaking(self)
 
+    # init a match
     def initMatch(self):
         self.board = Board(self)
         self.match = Match(self)
@@ -45,8 +52,9 @@ class Game():
         self.state = GameState.GameOver
     def stop(self):
         self.server.stop()
-        self.is_running=False
-        
+        # self.is_running=False
+    
+    # main game loop
     def run(self):
         self.screen.fill(CLR_Parchment)
         self.is_running=True
@@ -66,6 +74,7 @@ class Game():
                     self.htp.event_handler(event)
                 elif(self.state==GameState.HS):
                     self.hs.event_handler(event)
+                
             
             if(self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame):
                 self.menu.update()
@@ -79,6 +88,9 @@ class Game():
             elif(self.state==GameState.HS):
                 self.hs.update()
                 self.hs.draw(self.screen)
+            elif(self.state==GameState.Matchmake):
+                self.matchmaking.update()
+                self.matchmaking.draw(self.screen)       
             pygame.display.flip()
             self.clock.tick(30)
         pygame.quit()
@@ -215,8 +227,6 @@ class Chat(object):
                     self.chatInputBox.display=""
                     self.chatInputBox.update()
                     # self.server.send('username|update|' + self.inputBox.text)
-                    
-        
         
 class Board(object):
     def __init__(self,game, *args):
@@ -380,20 +390,15 @@ class HighestScore(object):
                 "name":TextStatic(self.font['score'],self.playerList[i]['username'],CLR_Black,387,323+(60*i)),
                 "score":TextStatic(self.font['score'],str(self.playerList[i]['score']),CLR_Black,996,323+(60*i)),
             })
-        # print(self.text[1]["rank"].draw(screen))      
-                
-        
         self.htp= pygame.image.load('./client/assets/HighestScore.png').convert_alpha()
         self.button= Button(self.font['text'],"Back to Main Menu",CLR_Tan,CLR_ProvincialPink,CLR_Tan,CLR_Tan,MENU_BTN_W,MENU_BTN_H,SCREEN_W/2 - MENU_BTN_W/2,826,MENU_BTN_BORDER,MENU_BTN_EDGE)
     def draw(self,screen):
         screen.blit(self.htp, (0,0))
         self.button.draw(screen)
         for i in range (5):
-            # self.text[0]["rank"].draw(screen)
             self.text[i]["rank"].draw(screen)
             self.text[i]["name"].draw(screen)
             self.text[i]["score"].draw(screen)
-            # print(self.text[i])
             
     def update(self):
         self.button.update()
@@ -403,7 +408,23 @@ class HighestScore(object):
             self.game.state=GameState.MENU
             # print("hehe")
         
-        
+class Matchmaking(object):
+    def __init__(self,game, *args):
+        self.game=game
+        self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),78)
+        self.text=["Finding match.","Finding match..","Finding match..."]
+        self.center=self.game.screen.get_rect().center
+        self.count=0
+        self.staticText=TextStatic(self.font,self.text[self.count],CLR_Black,600,875)
+    def draw(self,screen):
+        self.staticText.draw(screen)
+    def update(self):
+        if self.count >=2:
+            self.count=0
+        else:
+            self.count+=0.1
+        self.staticText=TextStatic(self.font,self.text[round(self.count)],CLR_Black,600,875)
+        # self.staticText.update()
                     
 
 try:
