@@ -401,6 +401,7 @@ class Matchmaking(object):
         self.game=game
         self.font=pygame.font.Font(os.path.join("./client/assets","fonts",'Poppins-Bold.ttf'),78)
         self.text=["Finding match.","Finding match..","Finding match..."]
+        self.text2=["Press `enter` to cancel"]
         self.center=self.game.screen.get_rect().center
         self.count=0
         self.staticText=TextStatic(self.font,self.text[self.count],CLR_Black,600,875)
