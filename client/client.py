@@ -52,7 +52,7 @@ class Game():
         self.state = GameState.GameOver
     def stop(self):
         self.server.stop()
-        # self.is_running=False
+        self.is_running=False
     
     # main game loop
     def run(self):
