@@ -1,13 +1,14 @@
-# Requirements
+Requirements
 - pygame 2.0.1
 - python ( tested with python 3.8.1 )
-# How To Run
-- Run server from this root directory ```py server/server.py```
-- Run client from this root directory ```py client/client.py```
 
-# Instruction
+How To Run
+- Run server from this root directory py server/server.py
+- Run client from this root directory py client/client.py
+
+Instruction
 - Open client
-- Change name by clicking on "Enter Name.." box, if its color chnaged it's mean you can type your name.
+- Change name by clicking on "ENter Name.." box, if its color chnaged it's mean you can type your name.
 - Press enter to submit yourname, you can only enter 8 character for your name.
 - Click matchmaking to enter matchmaking queue.
 - Wait for other client to join matchmaking.
