@@ -5,7 +5,7 @@
 - Run server from this root directory ```py server/server.py```
 - Run client from this root directory ```py client/client.py```
 
-# Instruction
+# instructions
 - Open client
 - Change name by clicking on "Enter Name.." box, if its color chnaged it's mean you can type your name.
 - Press enter to submit yourname, you can only enter 8 character for your name.
