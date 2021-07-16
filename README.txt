@@ -29,7 +29,8 @@
 - Your name and score are in the lower left corner of the screen, while your opponent is in the upper right corner.
 - In the game you can see whose turn at that time by looking at the top left corner of the screen.
 - During your turn you can click on small basin on your side (bottom side) with highlighted color to pick which seed you want to play.
-- You can chat to your opponent by clicking on "Type here..." box, and type your message and press enter to send.
+- You can chat to your opponent by clicking on chat box (box with "Type here..." placeholder), and type your message and press enter to send.
+- You can use cheat to make the match draw by typing and send "cheat" without quotes in chat box.
 - When the game ended there will be a pop up about the result and a button to go back to the main menu.
 
 ## Check Highest Score
