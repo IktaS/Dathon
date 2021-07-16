@@ -1,3 +1,4 @@
+# contain class mainly used to initiate asset/class on board
 import pygame
 import math
 import os

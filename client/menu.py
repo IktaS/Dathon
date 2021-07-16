@@ -1,3 +1,4 @@
+# contain class mainly used to initiate asset/class on menu
 import sys
 import pygame
 import os

@@ -1,3 +1,4 @@
+# main game file including class Game to run the game
 import socket
 import sys
 import pygame
@@ -46,6 +47,7 @@ class Game():
         self.match = Match(self)
         self.state = GameState.INGAME
 
+    # function related to game state
     def toMenu(self):
         self.state = GameState.MENU
     def gameOver(self):
@@ -58,24 +60,34 @@ class Game():
     def run(self):
         self.screen.fill(CLR_Parchment)
         self.is_running=True
+        
+        #while game is running
         while self.is_running:
+            # screen background
             self.screen.fill(CLR_Parchment)
             
+            # getting event and pass it to each screen
             for event in pygame.event.get():
+                # if closed
                 if event.type == pygame.QUIT:
-                    self.stop()                    
+                    self.stop()       
+                # if screen is main menu             
                 if self.state==GameState.MENU:
                     self.menu.event_handler(event)
+                # pop up create game or join game
                 elif self.state==GameState.CreateGame or self.state==GameState.JoinGame:
                     self.menu.event_handler(event)
+                # in-game
                 elif(self.state==GameState.INGAME or self.state==GameState.GameOver):
                     self.board.event_handler(event)
+                # how to play
                 elif(self.state==GameState.HTP):
                     self.htp.event_handler(event)
+                # highscore
                 elif(self.state==GameState.HS):
                     self.hs.event_handler(event)
                 
-            
+            # update and draw
             if(self.state==GameState.MENU or self.state==GameState.CreateGame or self.state==GameState.JoinGame):
                 self.menu.update()
                 self.menu.draw(self.screen)
@@ -90,7 +102,8 @@ class Game():
                 self.hs.draw(self.screen)
             elif(self.state==GameState.Matchmake):
                 self.matchmaking.update()
-                self.matchmaking.draw(self.screen)       
+                self.matchmaking.draw(self.screen)     
+              
             pygame.display.flip()
             self.clock.tick(30)
         pygame.quit()
@@ -327,9 +340,7 @@ class Board(object):
             # If button in box clicked return to menu
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.win.button.bg_rect.collidepoint(event.pos):
-                    print(self.game.state)
                     self.game.state=GameState.MENU
-                    print(self.game.state)
             
 class HowToPlay(object):
     def __init__(self,game, *args):
@@ -347,10 +358,7 @@ class HowToPlay(object):
     def event_handler(self,event):
         self.button.hover(event)
         if event.type == pygame.MOUSEBUTTONDOWN and self.button.bg_rect.collidepoint(event.pos):
-            # print("hehehe")
-            # print(self.game.state)
             self.game.state=GameState.MENU
-            # print(self.game.state)
         
                 
 class HighestScore(object):
@@ -363,7 +371,6 @@ class HighestScore(object):
         }
         self.text=[]
         for i in range (len(self.playerList)):
-            # print(i)
             self.text.append({
                 "rank":TextStatic(self.font['score'],str(i+1),CLR_Black,150,323+(60*i)),
                 "name":TextStatic(self.font['score'],self.playerList[i]['username'],CLR_Black,387,323+(60*i)),
@@ -383,7 +390,6 @@ class HighestScore(object):
         self.button.update()
         self.text=[]
         for i in range (len(self.playerList)):
-            # print(i)
             self.text.append({
                 "rank":TextStatic(self.font['score'],str(i+1),CLR_Black,150,323+(60*i)),
                 "name":TextStatic(self.font['score'],self.playerList[i]['username'],CLR_Black,387,323+(60*i)),
@@ -394,7 +400,6 @@ class HighestScore(object):
         self.button.hover(event)
         if event.type == pygame.MOUSEBUTTONDOWN and self.button.bg_rect.collidepoint(event.pos):
             self.game.state=GameState.MENU
-            # print("hehe")
         
 class Matchmaking(object):
     def __init__(self,game, *args):
